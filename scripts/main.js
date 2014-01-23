@@ -24,19 +24,46 @@ var api = (function() {
 
 var player = (function() {
 
-	var $jPlayer;
+	var $jPlayer, $progress, $duration, $position, $song, $artist, $album;
 	$(function() {
 		$jPlayer = $("#player .jplayer");
+		$progress = $(".progress-bar");
+		$duration = $("#duration");
+		$position = $("#position");
+		$song = $("#song");
+		$artist = $("#artist");
+		$album = $("#album");
 
-		$jPlayer.jPlayer({ supplied: 'mp3' });
+
+		$jPlayer.jPlayer({ 
+			supplied: 'mp3',
+			timeupdate: onUpdate
+		});
 	});
 
-	function play(path) {
+	function secondsToTime(sec)
+	{
+		return moment().startOf('day').add('s', sec).format('mm:ss')
+	}
+
+	function onUpdate(e)
+	{
+		$progress.css("width", e.jPlayer.status.currentPercentAbsolute + "%");
+		
+		$position.html(secondsToTime(e.jPlayer.status.currentTime));
+		$duration.html(secondsToTime(e.jPlayer.status.duration));
+	}
+
+	function play(path, item) {
 		$jPlayer.jPlayer("setMedia", {
-			mp3: 'api/stream?path=' + path
+			mp3: 'api/stream?path=' + encodeURIComponent(path)
 		});
 
 		$jPlayer.jPlayer("play");
+
+		$song.html(item.song);
+		$artist.html(item.artist);
+		$album.html(item.album);
 	};
 
 	return {
@@ -50,8 +77,12 @@ var list = (function() {
 		$list = $("#list");
 
 		$list.on('click', 'li', function() {
+			var item = $(this).data('item');
+			console.log(item);
+
+
 			if($(this).is('.folder')) {
-				navigate($(this).text());
+				navigate(item.name);
 			}
 			else
 			{
@@ -60,10 +91,9 @@ var list = (function() {
 				$.each(currentPath, function(i,x) {
 					str += x + '/'
 				});
-				str += $(this).text();
+				str += item.name;
 				
-
-				player.play(str);
+				player.play(str, item);
 			}
 		});
 
@@ -94,13 +124,14 @@ var list = (function() {
 	function populateList(path)
 	{
 		api.list(path).done(function(items) {
-			var str = '';
-
+			$list.html('');
 			$.each(items, function(i,x) {
-				str += '<li class=' + (x.isFile ? 'file' : 'folder') + '>' + x.name + '</li>';
-			});
+				
+				var li = $('<li class=' + (x.isFile ? 'file' : 'folder') + '>' + x.name + '</li>');
+				li.data('item', x);
+				$list.append(li);
 
-			$list.html(str);
+			});
 		});
 	}
 

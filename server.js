@@ -35,6 +35,36 @@ function getAbs(req)
 	return abs;
 }
 
+//Todo Id3
+function setInfo(item, req)
+{
+	var paths = req.body.path;
+
+	if(paths.length < 2)
+	{
+		item.song = item.name;
+		item.album = 'NA';
+		item.artist = 'NA';
+	}
+	if(paths.length === 2)
+	{
+		item.artist = paths[0];
+		item.album = paths[1];
+		item.song = item.name;
+
+	} 
+	if(paths.length >= 3)
+	{
+		item.artist = paths[0];
+		item.album = paths[1];
+		item.song = item.name;
+		
+		for(var i = 2; i < paths.length; i++)
+		{
+			item.album += ' - ' + paths[i];
+		}
+	}
+}
 
 /* api */
 app.post('/api/list', function(req, res) { //{ path: ['','',''] }
@@ -43,11 +73,17 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 
 	var list = _.map(
 		_.filter(fs.readdirSync(abs), function(x) { return x.substring(0,1) !== '.'; }), 
-		function(x) {
-		return {
+	function(x) {
+		var item = {
 			isFile: !fs.lstatSync(abs + x).isDirectory(),
 			name: x
-		}; });
+		}; 
+
+		if(item.isFile)
+			setInfo(item, req);
+
+		return item;
+	});
 
 	res.send(list);
 });

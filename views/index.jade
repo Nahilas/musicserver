@@ -23,8 +23,28 @@ html
 		ul#list
 
 		div#player
+			.row
+				.col-md-6.col-md-offset-3
+					.btn-group
+						.btn.btn-default Previous
+						.btn.btn-default Pause
+						.btn.btn-default Next
+
+					p &nbsp;
+					.pull-left#position 0:00
+					.pull-right#duration 0:00
+					.progress(style="margin: auto; width: 80%")
+						.progress-bar.progress-bar-info(style="width: 0%")
+
+					.text-center
+						h3#song 
+						h4#artist
+						h5#album 
+			
 			.jplayer
+
 
 		script(type="text/javascript", src="scripts/jquery.2.0.3.min.js")
 		script(type="text/javascript", src="scripts/jQuery.jPlayer.2.5.0/jquery.jplayer.min.js")
+		script(type="text/javascript", src="scripts/moment.js")
 		script(type="text/javascript", src="scripts/main.js")
