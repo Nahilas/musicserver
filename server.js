@@ -3,6 +3,7 @@ var config = require('./config.js');
 var express = require('express');
 var app = express();
 app.use(express.bodyParser());
+app.set('view engine', 'jade');
 
 var path = require('path');
 var _ = require('lodash');
@@ -12,8 +13,6 @@ var fs = require('fs');
 function userValid(request) {
 	return true;
 }
-
-
 //routes 
 /*app.get('*', function(req, res) {
 	if(userValid(req)) {
@@ -36,6 +35,8 @@ function getAbs(req)
 	return abs;
 }
 
+
+/* api */
 app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 	
 	var abs = getAbs(req);
@@ -51,13 +52,22 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 	res.send(list);
 });
 
-app.post('/api/stream', function(req, res)
+app.get('/api/stream', function(req, res)
 {
-	abs = getAbs(req);
-	abs = abs.substring(0, abs.length - 1);
+	var abs = config.media + req.query.path;
 
 	res.setHeader('content-type', 'audio/mpeg3');
     fs.createReadStream(abs).pipe(res);
 });
+
+
+/* client */
+app.use("/styles", express.static(__dirname + '/styles'));
+app.use("/scripts", express.static(__dirname + '/scripts'));
+
+app.get('/', function(req, res) {
+	res.render('index');
+});
+
 
 app.listen(config.port);

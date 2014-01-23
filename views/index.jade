@@ -1,0 +1,30 @@
+doctype html5
+
+html
+
+	head
+		title MusicPlayer
+		link(type="text/css",rel="stylesheet",href="styles/bootstrap.min.css")
+		link(type="text/css",rel="stylesheet",href="styles/main.css")
+
+	body
+		nav.navbar.navbar-default.navbar-fixed-top
+			.navbar-header
+				.a.navbar-brand(href="#", id="home") MusicPlayer
+
+			div.navbar-form.navbar-left
+				button(type="button").btn.btn-default#up Up
+
+			form.navbar-form.navbar-right
+				.form-group
+					input.form-control(type="text", placeholder="Search")
+				button(type="submit").btn.btn-default Search
+
+		ul#list
+
+		div#player
+			.jplayer
+
+		script(type="text/javascript", src="scripts/jquery.2.0.3.min.js")
+		script(type="text/javascript", src="scripts/jQuery.jPlayer.2.5.0/jquery.jplayer.min.js")
+		script(type="text/javascript", src="scripts/main.js")
