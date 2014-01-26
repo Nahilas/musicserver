@@ -18,16 +18,6 @@ var probe = require('node-ffprobe');
 function userValid(request) {
 	return true;
 }
-//routes 
-/*app.get('*', function(req, res) {
-	if(userValid(req)) {
-		req.next();
-		return;
-	}
-	
-	res.send(401);
-});*/
-
 
 function getAbs(path)
 {
@@ -81,7 +71,9 @@ function setInfo(item, path)
 	probe(config.media + str, function(error, probeData) {
 		if(!error) {
 			item.duration = probeData.format.duration;
-			item.song = probeData.metadata.title ? probeData.metadata.title : item.name;
+
+			var title = probeData.metadata.title || probeData.metadata.TITLE;
+			item.song = title ? title : item.name;
 		}
 
 		deferred.resolve();
@@ -200,6 +192,7 @@ app.get('/api/stream', function(req, res)
 /* client */
 app.use("/styles", express.static(__dirname + '/styles'));
 app.use("/scripts", express.static(__dirname + '/scripts'));
+app.use("/fonts", express.static(__dirname + '/fonts'));
 
 app.get('/', function(req, res) {
 	res.render('index');

@@ -1,29 +1,66 @@
 html, body {
 	width: 100%;
 	height: 100%;
+	font-family: 'Open Sans', Verdana;
 }
+
+
 
 #list
 {
 	list-style: none;
 	padding: 0px;
-	width: 30%;
-	padding-top: 50px;
-	padding-bottom: 200px;
-	height: 100%;
+	width: 100%;
+
+}
+
+#list-container
+{
+	top: 90px;
+	bottom: 240px;
 	position: fixed;
 	overflow: auto;
 	border-right: solid 2px #ccc;
 }
+
+#toolbar
+{
+	background: #ddd;
+	height: 40px;
+	position: fixed;
+	top: 50px;
+	line-height: 30px;
+}
+
+.breadcrumb-folder 
+{
+	overflow: hidden;
+	position: absolute;
+	height: 100%;
+	line-height: 40px;
+	float: left;
+	left: 10px;
+	right: 67px;
+}
+
+#toolbar .btn
+{
+	margin-top: 3px;
+}
+
+#toolbar, #list-container
+{
+	width: 30%;
+}
+
 
 #playlist
 {
 	width: 70%;
 	position: fixed;
 	left: 30%;
-	padding-top: 50px;
-	padding-bottom: 200px;
-	height: 100%;
+	top: 50px;
+	bottom: 240px;
 	position: fixed;
 	overflow: auto;
 }
@@ -48,13 +85,48 @@ html, body {
 
 #player
 {
-	height: 200px;
+	height: 240px;
 	width: 100%;
 	background: #eeeeee;
 	position: fixed;
 	bottom: 0px;
 	left: 0px;
 }
+
+#player #pause .glyphicon-pause
+{
+	display: none;
+}
+
+#player #pause.playing .glyphicon-pause
+{
+	display: inline;
+}
+
+
+#player #pause.playing .glyphicon-play
+{
+	display: none;
+}
+
+
+#player .btn-group
+{
+	width: 240px;
+	margin: auto;
+	display: block;
+	margin-top: 20px;
+	height: 30px;
+}
+
+#player .btn-group .btn
+{
+	font-size: 35px;
+	padding-top: 10px;
+	height: 60px;
+	width: 80px;
+}
+
 
 #home {
 	cursor: pointer;
@@ -63,9 +135,4 @@ html, body {
 #list li:hover
 {
 	background: #eee;
-}
-
-#pause.playing
-{
-	background: #ff0;
 }

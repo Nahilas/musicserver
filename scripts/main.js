@@ -240,9 +240,11 @@ var playlist = (function() {
 })();
 
 var list = (function() {
-	var $list, currentPath = [];
+	var $list, $up, currentPath = [];
 	$(function() {
 		$list = $("#list");
+		$up = $("#up");
+		$breadcrumb = $(".breadcrumb-folder");
 
 		$list.on('click', 'li', function() {
 			var item = $(this).data('item');
@@ -266,7 +268,7 @@ var list = (function() {
 			populateList();
 		});
 
-		$("#up").click(up);
+		$up.click(up);
 
 		populateList();
 	});
@@ -290,18 +292,32 @@ var list = (function() {
 			return;
 
 		currentPath.pop();
+
+		if(currentPath.length === 0)
+			$up.addClass('hide');
+
 		populateList(currentPath);
 	}
 
 	function navigate(name)
 	{
+		$up.removeClass('hide');
 		currentPath.push(name);
+
 		populateList(currentPath);
+	}
+
+	function setBreadcrumb() {
+		var str = "";
+		$.each(currentPath, function(i,x) { str += x + "/"; });
+		$breadcrumb.html(str.substring(0, str.length - 1));
 	}
 
 	function populateList(path)
 	{
+
 		api.list(path).done(function(items) {
+			setBreadcrumb();
 			$list.html('');
 			$.each(items, function(i,x) {
 				
