@@ -41,10 +41,23 @@ var api = (function() {
 	};
 })();
 
+var util = (function() {
+
+	function secondsToTime(sec)
+	{
+		return moment().startOf('day').add('s', sec).format('mm:ss')
+	}
+
+	return {
+		secondsToTime: secondsToTime
+	};
+
+})();
+
 var player = (function() {
 
 	var $jPlayer, $progress, $duration, $position, $song, $artist, $album, $pause, $next, $prev;
-	var playing = false;
+	var playing = false, currentItem = null;
 	$(function() {
 		$jPlayer = $("#player .jplayer");
 		$progress = $(".progress-bar");
@@ -87,20 +100,20 @@ var player = (function() {
 		$prev.click(playlist.prev);
 	}
 
-	function secondsToTime(sec)
-	{
-		return moment().startOf('day').add('s', sec).format('mm:ss')
-	}
-
 	function onUpdate(e)
 	{
-		$progress.css("width", e.jPlayer.status.currentPercentAbsolute + "%");
+		var duration = e.jPlayer.status.duration === 0 ? currentItem.duration : e.jPlayer.status.duration;
+		var current = e.jPlayer.status.currentTime;
+		var percent = (current / duration) * 100;
+
+		$progress.css("width", percent + "%");
 		
-		$position.html(secondsToTime(e.jPlayer.status.currentTime));
-		$duration.html(secondsToTime(e.jPlayer.status.duration));
+		$position.html(util.secondsToTime(current));
+		$duration.html(util.secondsToTime(duration));
 	}
 
 	function playItem(item) {
+		currentItem = item;
 		$jPlayer.jPlayer("setMedia", {
 			mp3: item.stream
 		});
@@ -132,6 +145,7 @@ var playlist = (function() {
 
 	var currentSongs = [];
 	var currentIndex = null;
+	var dropIndex = null;
 	var $playlist, currentDrag;
 
 	$(function() {
@@ -148,7 +162,8 @@ var playlist = (function() {
 	function hookupDragDrop() {
 		document.getElementById("playlist").ondrop = function(e) {
 			e.preventDefault();
-			list.add(JSON.parse(e.dataTransfer.getData("item")));
+			list.add(JSON.parse(e.dataTransfer.getData("item")), dropIndex);
+			dropIndex = null;
 		}
 
 		document.getElementById("playlist").ondragover = function(e) {
@@ -156,11 +171,16 @@ var playlist = (function() {
 		}
 	}
 
-	function addSongs(path)
+	function addSongs(path, before)
 	{
 		api.listsongs(path).done(function(songs) {
-			for(var s in songs)
-				currentSongs.push(songs[s]);
+			if(!before)
+				currentSongs = currentSongs.concat(songs);
+			else {
+
+				var after = currentSongs.splice(before, currentSongs.length);
+				currentSongs = currentSongs.concat(songs, after);
+			}
 
 			render();
 		});
@@ -195,7 +215,7 @@ var playlist = (function() {
 	function render() {
 		$playlist.html('');
 		$.each(currentSongs, function(i,x) {
-			var row = '<tr class="item" data-index="' + i + '""><td>' + x.song + '</td><td>' + x.album + '</td><td>' + x.artist + '</td></tr>';  
+			var row = '<tr ondragenter="playlist.itemDragEnter(event)" class="item" data-index="' + i + '""><td>' + x.song + '</td><td>' + x.album + '</td><td>' + x.artist + '</td><td>' + util.secondsToTime(x.duration) + '</td></tr>';  
 
 			$(row).data('item', x);
 
@@ -203,11 +223,19 @@ var playlist = (function() {
 		});
 	}
 
+	function itemDragEnter(e) {
+		$("#playlist .item").removeClass("warning");
+		
+		$(e.srcElement).parent().addClass("warning");
+		dropIndex = $(e.srcElement).parent().data('index');
+	}
+
 	return {
 		addSongs: addSongs,
 		play: play,
 		prev: prev,
-		next: next
+		next: next,
+		itemDragEnter: itemDragEnter
 	}
 })();
 
@@ -243,12 +271,12 @@ var list = (function() {
 		populateList();
 	});
 
-	function add(item)
+	function add(item, before)
 	{
 		var path = currentPath.slice(0);
 		path.push(item.name)
 			
-		playlist.addSongs(path);
+		playlist.addSongs(path, before);
 	}
 
 	function itemDragStart(e)
@@ -277,7 +305,7 @@ var list = (function() {
 			$list.html('');
 			$.each(items, function(i,x) {
 				
-				var li = $('<li ondragstart="list.itemDragStart(event)" draggable="true" class=' + (x.isFile ? 'file' : 'folder') + '>' + x.name + '<button type="button" class="btn btn-link add">+</button></li>');
+				var li = $('<li ondragstart="list.itemDragStart(event)" draggable="true" class=' + (x.isFile ? 'file' : 'folder') + '>' + (x.isFile ? x.song : x.name) + '<button type="button" class="btn btn-link add">+</button></li>');
 				li.data('item', x);
 				$list.append(li);
 

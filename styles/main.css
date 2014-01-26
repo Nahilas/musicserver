@@ -28,6 +28,10 @@ html, body {
 	overflow: auto;
 }
 
+#playlist .item.dragover {
+	border-top: dotted 2px black;
+}
+
 #playlist .item
 {
 	cursor: pointer;

@@ -9,6 +9,12 @@ var _ = require('lodash');
 var node_path = require('path');
 var fs = require('fs');
 
+var q = require('q');
+
+var ffmpeg = require('fluent-ffmpeg');
+
+var probe = require('node-ffprobe');
+
 function userValid(request) {
 	return true;
 }
@@ -37,6 +43,8 @@ function getAbs(path)
 //Todo Id3
 function setInfo(item, path)
 {
+	var deferred = q.defer();
+
 	if(path.length < 2)
 	{
 		item.song = item.name;
@@ -62,20 +70,24 @@ function setInfo(item, path)
 		}
 	}
 
-	item.stream = getStreamUrl(item.name, path);
-}
-
-function getStreamUrl(name, path)
-{
 	var str = '';
-
 	_.each(path, function(x) {
 		str += x + '/'
 	});
+	str += item.name;
 
-	str += name;
+	item.stream = '/api/stream?path=' + encodeURIComponent(str);
 
-	return '/api/stream?path=' + encodeURIComponent(str);
+	probe(config.media + str, function(error, probeData) {
+		if(!error) {
+			item.duration = probeData.format.duration;
+			item.song = probeData.metadata.title ? probeData.metadata.title : item.name;
+		}
+
+		deferred.resolve();
+	});
+	
+	return deferred.promise;
 }
 
 function filteredReadDir(abs)
@@ -106,7 +118,8 @@ function filteredReadDir(abs)
 app.post('/api/listsongs', function(req, res)
 {
 	var songs = [];
-	
+	var promises = [];
+
 	var getSongs = function(path) {
 		var abs = getAbs(path);
 
@@ -125,14 +138,16 @@ app.post('/api/listsongs', function(req, res)
 				isFile: true,
 				name: x,
 			};
-			setInfo(song, path);
+			promises.push(setInfo(song, path));
 			songs.push(song);
 		});
 	}
 
 	getSongs(req.body.path);
 
-	res.send(songs);
+	q.all(promises).done(function() {
+		res.send(songs);
+	});
 })
 
 
@@ -140,6 +155,7 @@ app.post('/api/listsongs', function(req, res)
 app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 	
 	var abs = getAbs(req.body.path);
+	var promises = [];
 
 	var list = _.map(filteredReadDir(abs), 
 	function(x) {
@@ -149,20 +165,35 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 		}; 
 
 		if(item.isFile)
-			setInfo(item, req.body.path);
+			promises.push(setInfo(item, req.body.path));
 
 		return item;
 	});
 
-	res.send(list);
+	q.all(promises).done(function() {
+		res.send(list);	
+	});
 });
+
+function createStream(abs, res) {
+	if(node_path.extname(abs) === '.mp3') {
+		fs.createReadStream(abs).pipe(res);
+		return;
+	}
+
+	var proc = new ffmpeg({ source: abs, nolog: false })
+		.toFormat('mp3')
+		.withAudioBitrate(config.transcode_bitrate + 'k')
+	    .withAudioChannels(2)
+	    .writeToStream(res);
+}
 
 app.get('/api/stream', function(req, res)
 {
 	var abs = config.media + req.query.path;
 
 	res.setHeader('content-type', 'audio/mpeg3');
-    fs.createReadStream(abs).pipe(res);
+	createStream(abs, res)
 });
 
 

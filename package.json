@@ -1,0 +1,30 @@
+{
+  "name": "MusicServer",
+  "version": "0.1.0",
+  "description": "Features *Serve music based on folder structure  *Artist - Album - Track | Artist - Album - CD - Track *Search music *Transcode via ffmpeg",
+  "main": "config.js",
+  "dependencies": {
+    "express": "~3.4.8",
+    "jade": "~1.1.5",
+    "fluent-ffmpeg": "~1.5.2",
+    "lodash": "~2.4.1",
+    "node-ffprobe": "~1.2.2",
+    "stream-buffers": "~0.2.5",
+    "q": "~1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Nahilas/musicserver.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nahilas/musicserver/issues"
+  },
+  "homepage": "https://github.com/Nahilas/musicserver"
+}
