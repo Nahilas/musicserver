@@ -151,7 +151,7 @@ var playlist = (function() {
 	$(function() {
 		$playlist = $("#playlist table tbody");
 
-		$playlist.on('dblclick', '.item', function() {
+		$playlist.on('dblclick', '.item', function(e) {
 			currentIndex = $(this).data('index');
 			play();
 		});
@@ -171,7 +171,7 @@ var playlist = (function() {
 		}
 	}
 
-	function addSongs(path, before)
+	function addSongs(path, before, cb)
 	{
 		api.listsongs(path).done(function(songs) {
 			if(!before)
@@ -183,7 +183,17 @@ var playlist = (function() {
 			}
 
 			render();
+			if(cb)
+			{
+				cb();
+			}
 		});
+	}
+
+	function playSongs(path)
+	{
+		currentSongs = [];
+		addSongs(path, null, function() { currentIndex = 0; play() });
 	}
 
 	function play() {
@@ -235,6 +245,7 @@ var playlist = (function() {
 		play: play,
 		prev: prev,
 		next: next,
+		playSongs: playSongs,
 		itemDragEnter: itemDragEnter
 	}
 })();
@@ -260,7 +271,12 @@ var list = (function() {
 
 		$list.on('click', '.add', function(e) {
 			e.stopPropagation();
-			add($(this).parent().data('item'));			
+			add($(this).parents('li').data('item'));			
+		});
+
+		$list.on('click', '.play', function(e) {
+			e.stopPropagation();
+			play($(this).parents('li').data('item'));
 		});
 
 		$("#home").click(function() {
@@ -279,6 +295,14 @@ var list = (function() {
 		path.push(item.name)
 			
 		playlist.addSongs(path, before);
+	}
+
+	function play(item)
+	{
+		var path = currentPath.slice(0);
+		path.push(item.name)
+			
+		playlist.playSongs(path);
 	}
 
 	function itemDragStart(e)
@@ -321,7 +345,7 @@ var list = (function() {
 			$list.html('');
 			$.each(items, function(i,x) {
 				
-				var li = $('<li ondragstart="list.itemDragStart(event)" draggable="true" class=' + (x.isFile ? 'file' : 'folder') + '>' + (x.isFile ? x.song : x.name) + '<button type="button" class="btn btn-link add">+</button></li>');
+				var li = $('<li ondragstart="list.itemDragStart(event)" draggable="true" class=' + (x.isFile ? 'file' : 'folder') + '>' + (x.isFile ? x.song : x.name) + '<div class="btn-group pull-right"><button type="button" class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button><button type="button" class="btn btn-default add"><span class="glyphicon glyphicon-log-in"></span></button></li></div>');
 				li.data('item', x);
 				$list.append(li);
 

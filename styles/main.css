@@ -14,6 +14,25 @@ html, body {
 
 }
 
+#list li .btn-group
+{
+	margin-right: 5px;
+}
+
+#list li .btn-group .btn
+{
+	width: 25px;
+	height: 25px;
+	padding: 0;
+	margin-top: 4px;
+	font-size: 15px;
+	color: #444;
+}
+
+#list li .btn-group .btn span.glyphicon {
+	top: 0px;
+}
+
 #list-container
 {
 	top: 90px;
@@ -63,6 +82,13 @@ html, body {
 	bottom: 240px;
 	position: fixed;
 	overflow: auto;
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 #playlist .item.dragover {
@@ -78,8 +104,8 @@ html, body {
 #list li {
 	cursor: pointer;
 	text-indent: 20px;
-	height: 30px;
-	line-height: 30px;
+	height: 35px;
+	line-height: 35px;
 	border-bottom: solid 1px #eee;
 }
 

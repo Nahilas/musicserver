@@ -7,4 +7,9 @@ Implemented:
 Todo:
 	*Search
 	*Layout
+	*Seeking + buffering display
 	*Media scan with database for ffprobe info/data gathering from external source(artist info, covert art etc)
+
+Media scan algorithm:
+	File system
+	Last.fm scrobble
