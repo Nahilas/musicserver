@@ -7,9 +7,31 @@ html, body {
 {
 	list-style: none;
 	padding: 0px;
-	width: 100%;
-	margin-top: 50px;
+	width: 30%;
+	padding-top: 50px;
 	padding-bottom: 200px;
+	height: 100%;
+	position: fixed;
+	overflow: auto;
+	border-right: solid 2px #ccc;
+}
+
+#playlist
+{
+	width: 70%;
+	position: fixed;
+	left: 30%;
+	padding-top: 50px;
+	padding-bottom: 200px;
+	height: 100%;
+	position: fixed;
+	overflow: auto;
+}
+
+#playlist .item
+{
+	cursor: pointer;
+	font-size: 14px;
 }
 
 #list li {
@@ -37,4 +59,9 @@ html, body {
 #list li:hover
 {
 	background: #eee;
+}
+
+#pause.playing
+{
+	background: #ff0;
 }

@@ -5,9 +5,8 @@ var app = express();
 app.use(express.bodyParser());
 app.set('view engine', 'jade');
 
-var path = require('path');
 var _ = require('lodash');
-
+var node_path = require('path');
 var fs = require('fs');
 
 function userValid(request) {
@@ -24,11 +23,11 @@ function userValid(request) {
 });*/
 
 
-function getAbs(req)
+function getAbs(path)
 {
 	var abs = config.media;
 	
-	var directories = _.filter(req.body.path, function(x) { return (x !== '..' && x !== "."); });
+	var directories = _.filter(path, function(x) { return (x !== '..' && x !== "."); });
 
 	_.each(directories, function(x) { abs += x + '/'; });
 
@@ -36,43 +35,113 @@ function getAbs(req)
 }
 
 //Todo Id3
-function setInfo(item, req)
+function setInfo(item, path)
 {
-	var paths = req.body.path;
-
-	if(paths.length < 2)
+	if(path.length < 2)
 	{
 		item.song = item.name;
 		item.album = 'NA';
 		item.artist = 'NA';
 	}
-	if(paths.length === 2)
+	if(path.length === 2)
 	{
-		item.artist = paths[0];
-		item.album = paths[1];
+		item.artist = path[0];
+		item.album = path[1];
 		item.song = item.name;
 
 	} 
-	if(paths.length >= 3)
+	if(path.length >= 3)
 	{
-		item.artist = paths[0];
-		item.album = paths[1];
+		item.artist = path[0];
+		item.album = path[1];
 		item.song = item.name;
 		
-		for(var i = 2; i < paths.length; i++)
+		for(var i = 2; i < path.length; i++)
 		{
-			item.album += ' - ' + paths[i];
+			item.album += ' - ' + path[i];
 		}
 	}
+
+	item.stream = getStreamUrl(item.name, path);
 }
+
+function getStreamUrl(name, path)
+{
+	var str = '';
+
+	_.each(path, function(x) {
+		str += x + '/'
+	});
+
+	str += name;
+
+	return '/api/stream?path=' + encodeURIComponent(str);
+}
+
+function filteredReadDir(abs)
+{
+	return _.filter(fs.readdirSync(abs), function(x) {
+		if(x.substring(0,1) === '.')
+			return false;
+
+		var isDir = fs.lstatSync(abs + x).isDirectory();
+
+		if(isDir)
+			return true;
+
+		var ext = node_path.extname(x);
+
+		var found = false;
+		_.each(config.filetypes, function(y) {
+			if(y.toLowerCase() == ext.toLowerCase()) {
+				found = true;
+				return;
+			}
+		});
+
+		return found;
+	});	
+}
+
+app.post('/api/listsongs', function(req, res)
+{
+	var songs = [];
+	
+	var getSongs = function(path) {
+		var abs = getAbs(path);
+
+		_.each(filteredReadDir(abs), function(x) {
+
+			if(fs.lstatSync(abs + x).isDirectory())
+			{
+				var newPath = _.clone(path);
+				newPath.push(x);
+
+				getSongs(newPath);
+				return;
+			}
+
+			var song = {
+				isFile: true,
+				name: x,
+			};
+			setInfo(song, path);
+			songs.push(song);
+		});
+	}
+
+	getSongs(req.body.path);
+
+	res.send(songs);
+})
+
 
 /* api */
 app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 	
-	var abs = getAbs(req);
+	var abs = getAbs(req.body.path);
 
-	var list = _.map(
-		_.filter(fs.readdirSync(abs), function(x) { return x.substring(0,1) !== '.'; }), 
+	var list = _.map(filteredReadDir(abs), 
 	function(x) {
 		var item = {
 			isFile: !fs.lstatSync(abs + x).isDirectory(),
@@ -80,7 +149,7 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 		}; 
 
 		if(item.isFile)
-			setInfo(item, req);
+			setInfo(item, req.body.path);
 
 		return item;
 	});

@@ -21,14 +21,23 @@ html
 				button(type="submit").btn.btn-default Search
 
 		ul#list
+		div#playlist
+			table.table.table-hover.table-condensed
+				thead
+					tr
+						th Title
+						th Album
+						th Artist
+				tbody
+
 
 		div#player
 			.row
 				.col-md-6.col-md-offset-3
 					.btn-group
-						.btn.btn-default Previous
-						.btn.btn-default Pause
-						.btn.btn-default Next
+						.btn.btn-default#prev Previous
+						.btn.btn-default#pause Pause
+						.btn.btn-default#next Next
 
 					p &nbsp;
 					.pull-left#position 0:00

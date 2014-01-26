@@ -3,5 +3,6 @@ module.exports = {
 	users: [
 		{ name: "nahilas", password: "SuperManta4Music" }
 	],
-	port: 50000
+	port: 50000,
+	filetypes: ['.mp3', '.flac', '.ogg']
 };
