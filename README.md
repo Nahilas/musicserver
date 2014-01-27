@@ -9,6 +9,7 @@ Todo:
 	*Layout
 	*Seeking + buffering display
 	*Media scan with database for ffprobe info/data gathering from external source(artist info, covert art etc)
+	*sort songs by ffprobe int
 
 Media scan algorithm:
 	File system

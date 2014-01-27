@@ -88,6 +88,7 @@ function probedb() {
 				var title = probeData.metadata.title || probeData.metadata.TITLE;
 
 				item.song = title ? title : item.name;
+				item.track = probeData.metadata.track ? probeData.metadata.track : '';
 			} 
 
 			probedCount++;

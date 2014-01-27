@@ -5,5 +5,6 @@ module.exports = {
 	],
 	port: 50000,
 	filetypes: ['.mp3', '.flac', '.ogg'],
-	transcode_bitrate: 320
+	transcode_bitrate: 320,
+	lastfm_apikey: 'bf971dd4d583b3de867c2d2a570577d3'
 };

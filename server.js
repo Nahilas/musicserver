@@ -10,7 +10,7 @@ var q = require('q');
 var ffmpeg = require('fluent-ffmpeg');
 var probe = require('node-ffprobe');
 var scanner = require('./scanner.js');
-
+var lastfm = require('./lastfm.js');
 
 function userValid(request) {
 	return true;
@@ -119,9 +119,17 @@ app.post('/api/listsongs', function(req, res)
 	}
 
 	getSongs(req.body.path);
-	res.send(songs);
-})
 
+	if(songs.length > 0) {
+		var grouped = [];
+		_.each(_.groupBy(songs, 'album'), function(x, p) { grouped.push(_.sortBy(x, 'track')) });
+
+		var album = grouped.pop();
+		var songs = album.concat.apply(album, grouped);
+	}
+
+	res.send(songs);
+});
 
 /* api */
 app.post('/api/list', function(req, res) { //{ path: ['','',''] }
@@ -141,7 +149,11 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 		return item;
 	});
 
-	res.send(list);	
+	var grouped = _.groupBy(list, 'isFile');
+	grouped.false = grouped.false || [];
+	grouped.true = grouped.true || [];
+
+	res.send(grouped.false.concat(_.sortBy(grouped.true, 'track')));	
 });
 
 function createStream(abs, res) {
@@ -180,4 +192,5 @@ app.get('/', function(req, res) {
 	res.render('index');
 });
 
+lastfm.getArtist("Bikstok Røgsystem");
 app.listen(config.port);
