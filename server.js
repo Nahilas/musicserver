@@ -179,7 +179,8 @@ app.get('/api/stream', function(req, res)
 
 app.get('/api/scan', function(req, res)
 {
-	scanner.scan();
+	rescan = req.query.rescan == 'true';
+	scanner.scan(rescan);
 	res.send(200);
 });
 
@@ -192,5 +193,4 @@ app.get('/', function(req, res) {
 	res.render('index');
 });
 
-lastfm.getArtist("Bikstok Røgsystem");
 app.listen(config.port);

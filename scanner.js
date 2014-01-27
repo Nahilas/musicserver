@@ -4,24 +4,40 @@ var _ = require('lodash');
 var node_path = require('path');
 var ffprobe = require('node-ffprobe');
 var q = require('q');
+var lastfm = require('./lastfm.js');
 
 var db = [], fileCount = 0, probedCount = 0;
-var cache = null;
+var cache = null, scanning = false;
 
-function scan() {
+function scan(rescan) {
+	if(scanning)
+		return;
+
 	console.log("Scan initiated");
 
 	fileCount = 0;
 	probedCount = 0;
-	db = [];
 
+	if(rescan)
+		db = [];
+	else {
+		cache = null;
+		loadcache();
+		db = _.clone(cache);
+	}
+
+	scanning = true;
+	
 	filescandb()
 		.then(savedb)
 		.then(probedb)
 		.then(savedb)
+		.then(scrobbledb)
+		.then(savedb)
 		.then(function() {
 			console.log("Scan completed");
 			cache = null; //invalidate cache
+			scanning = false;
 		});
 }
 
@@ -36,17 +52,24 @@ function filescandb() {
 		_.each(dirContent, function(x,i) {
 			if(x.substring(0,1) === '.')
 				return;
-			var item = {
+
+			var cachedItem = _.find(content, function(y) { return y.name === x; });
+
+			var item = cachedItem || {
 				name: x,
-				isFile: true
+				isFile: true,
+				probed: false,
+				scrobbled: false
 			};
 
 			if(fs.lstatSync(dir + '/' + x).isDirectory())
 			{
-				item.items = [];
+				item.items = item.items || [];
 				item.isFile = false;
 				scanDir(dir + '/' + x, item.items)
-				content.push(item)
+
+				if(!cachedItem)
+					content.push(item)
 			}
 			else
 			{   //only add allowed file types
@@ -61,7 +84,9 @@ function filescandb() {
 				});
 
 				if(found) {
-					content.push(item);
+					if(!cachedItem)
+						content.push(item);
+
 					fileCount++;
 				}
 			}
@@ -91,6 +116,7 @@ function probedb() {
 				item.track = probeData.metadata.track ? probeData.metadata.track : '';
 			} 
 
+			item.probed = true;
 			probedCount++;
 
 			console.log('Probed ' + probedCount + '/' + fileCount);
@@ -105,7 +131,7 @@ function probedb() {
 	function probe(items, path)
 	{
 		_.each(items, function(x) {
-			if(x.isFile) {
+			if(x.isFile && !x.probed) {
 				var d = q.defer();
 				promises.push(d.promise);
 				queue.push(function() { runprobe(x, path + '/' + x.name, d); });
@@ -115,7 +141,9 @@ function probedb() {
 		});
 	}
 	probe(db, '');
-	queue.pop()();
+
+	if(queue.length > 0)
+		queue.pop()();
 	
 	return q.all(promises);
 }
@@ -137,6 +165,86 @@ function loadcache()
 		try {
 			cache = JSON.parse(fs.readFileSync('.db'));
 		}catch(e) { cache = []; }
+}
+
+function scrobbledb() {
+	var queue = [];
+
+	console.log("Scrobbling");
+
+	var deferred = q.defer();
+
+	_.each(db, function(item) {
+		if(!item.scrobbled)
+		{
+			queue.push(function() {
+				lastfm.getArtist(item.name).then(function(artist) {
+					try {
+						if(!artist)
+						{
+							console.log(artist.name + " not found")
+						}
+						else {
+							console.log(artist.name + " scrobbled");
+							item.summary = artist.bio.summary;
+							item.images = artist.image;
+							item.scrobbled = true;	
+						}
+						
+					}
+					catch(e)
+					{
+						console.log('Error scrobbling "' + item.name + '" - ' + e);
+					}
+					
+					if(queue.length > 0)
+						queue.pop()();
+					else
+						deferred.resolve();
+				});
+			});
+		}
+
+		_.each(item.items, function(subItem) {
+			if(subItem.scrobbled)
+				return;
+
+			queue.push(function() {
+
+				lastfm.getAlbum(subItem.name, item.name).then(function(album) {
+					try {
+						if(!album)
+						{
+							console.log(item.name + " - " + subItem.name + " not found")
+						}
+						else {
+							console.log(subItem.name + " scrobbled");
+							subItem.images = album.image;
+							subItem.scrobbled = true;
+						}
+					}
+					catch(e)
+					{
+						console.log('Error scrobbling "' + subItem.name + '" - ' + e);
+					}
+					
+					if(queue.length > 0)
+						queue.pop()();
+					else
+						deferred.resolve();
+				});
+
+			});
+			
+		});
+	});
+
+	if(queue.length > 0)
+		queue.pop()();
+	else
+		deferred.resolve();
+
+	return deferred.promise;
 }
 
 function setInfo(item, path)

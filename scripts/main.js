@@ -339,7 +339,6 @@ var list = (function() {
 
 	function populateList(path)
 	{
-
 		api.list(path).done(function(items) {
 			setBreadcrumb();
 			$list.html('');
