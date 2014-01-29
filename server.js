@@ -29,39 +29,39 @@ function getAbs(path)
 
 function setInfo(item, path)
 {
-	var deferred = q.defer();
-
-	if(path.length < 2)
-	{
-		item.song = item.name;
-		item.album = 'NA';
-		item.artist = 'NA';
-	}
-	if(path.length === 2)
-	{
-		item.artist = path[0];
-		item.album = path[1];
-		item.song = item.name;
-
-	} 
-	if(path.length >= 3)
-	{
-		item.artist = path[0];
-		item.album = path[1];
-		item.song = item.name;
-		
-		for(var i = 2; i < path.length; i++)
+	if(item.isFile) {
+		if(path.length < 2)
 		{
-			item.album += ' - ' + path[i];
+			item.song = item.name;
+			item.album = 'NA';
+			item.artist = 'NA';
 		}
-	}
+		if(path.length === 2)
+		{
+			item.artist = path[0];
+			item.album = path[1];
+			item.song = item.name;
 
-	var str = '';
-	_.each(path, function(x) {
-		str += x + '/'
-	});
-	str += item.name;
-	item.stream = '/api/stream?path=' + encodeURIComponent(str);
+		} 
+		if(path.length >= 3)
+		{
+			item.artist = path[0];
+			item.album = path[1];
+			item.song = item.name;
+			
+			for(var i = 2; i < path.length; i++)
+			{
+				item.album += ' - ' + path[i];
+			}
+		}
+
+		var str = '';
+		_.each(path, function(x) {
+			str += x + '/'
+		});
+		str += item.name;
+		item.stream = '/api/stream?path=' + encodeURIComponent(str);
+	}
 
 	scanner.setInfo(item, path);
 }
@@ -131,10 +131,24 @@ app.post('/api/listsongs', function(req, res)
 	res.send(songs);
 });
 
+function getParent(path)
+{
+	if(path.length < 1) //no parent
+		return null;
+
+	var cloned = _.clone(path);
+
+	var item = { isFile: false, name: cloned.pop() };
+	setInfo(item, cloned);
+
+	return item;
+}
+
 /* api */
 app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 	
 	var abs = getAbs(req.body.path);
+	var expand = req.body.expand;
 
 	var list = _.map(filteredReadDir(abs), 
 	function(x) {
@@ -143,7 +157,7 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 			name: x
 		}; 
 
-		if(item.isFile)
+		if(expand)
 			setInfo(item, req.body.path);
 
 		return item;
@@ -153,7 +167,10 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 	grouped.false = grouped.false || [];
 	grouped.true = grouped.true || [];
 
-	res.send(grouped.false.concat(_.sortBy(grouped.true, 'track')));	
+	res.send({
+		parent: getParent(req.body.path),
+		items: grouped.false.concat(_.sortBy(grouped.true, 'track'))
+	});	
 });
 
 function createStream(abs, res) {

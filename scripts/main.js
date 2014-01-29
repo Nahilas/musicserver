@@ -11,7 +11,7 @@ var api = (function() {
 			url: '/api/list',
 			cache: false,
 			contentType: 'application/json',
-			data: JSON.stringify({ path: path }),
+			data: JSON.stringify({ path: path, expand: path.length > 0 }),
 			processData: false,
 			dataType: 'json'
 		});
@@ -260,13 +260,8 @@ var list = (function() {
 		$list.on('click', 'li', function() {
 			var item = $(this).data('item');
 
-			if($(this).is('.folder')) {
+			if($(this).data('action') === 'navigate')
 				navigate(item.name);
-			}
-			else
-			{
-				player.play(item);
-			}
 		});
 
 		$list.on('click', '.add', function(e) {
@@ -337,18 +332,51 @@ var list = (function() {
 		$breadcrumb.html(str.substring(0, str.length - 1));
 	}
 
-	function populateList(path)
+
+	function renderDefault(item)
 	{
-		api.list(path).done(function(items) {
-			setBreadcrumb();
-			$list.html('');
-			$.each(items, function(i,x) {
-				
-				var li = $('<li ondragstart="list.itemDragStart(event)" draggable="true" class=' + (x.isFile ? 'file' : 'folder') + '>' + (x.isFile ? x.song : x.name) + '<div class="btn-group pull-right"><button type="button" class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button><button type="button" class="btn btn-default add"><span class="glyphicon glyphicon-log-in"></span></button></li></div>');
+		$.each(item.items, function(i,x) {
+			var li = $('<li data-action="navigate" ondragstart="list.itemDragStart(event)" draggable="true" class="generic">' + (x.isFile ? x.song : x.name) + '<div class="btn-group pull-right"><button type="button" class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button><button type="button" class="btn btn-default add"><span class="glyphicon glyphicon-log-in"></span></button></li></div>');
+			li.data('item', x);
+			$list.append(li);
+		});
+	}
+
+	function renderArtist(item)
+	{
+		var albumTemplate = _.template('<li class="album"><div class="row">' +
+		'<div class="col-xs-4 cover"><img src="<%=cover%>" /></div>' +
+		'<div class="col-xs-8 info"><h3><%=name%></h3><h5>2007</h5><h5><%=items.length%> songs</h5></div>' +
+		'</div></li>');
+
+		_.each(item.items, function(x) 
+		{
+			x.cover = _.find(x.images, function(y) { return y.size === 'large'; })['#text'];
+			$list.append(albumTemplate(x))
+
+			$.each(x.items, function(i,x) {
+				var li = $('<li data-action="navigate" ondragstart="list.itemDragStart(event)" draggable="true" class="generic">' + (x.isFile ? x.song : x.name) + '<div class="btn-group pull-right"><button type="button" class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button><button type="button" class="btn btn-default add"><span class="glyphicon glyphicon-log-in"></span></button></li></div>');
 				li.data('item', x);
 				$list.append(li);
-
 			});
+		});
+	}
+
+
+	function populateList(path)
+	{
+		api.list(path).done(function(item) {
+			setBreadcrumb();
+			$list.html('');
+
+			if(item.parent && item.parent.summary)
+			{
+				renderArtist(item);
+			}
+			else
+			{
+				renderDefault(item);
+			}
 		});
 	}
 

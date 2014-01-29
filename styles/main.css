@@ -4,6 +4,11 @@ html, body {
 	font-family: 'Open Sans', Verdana;
 }
 
+#top
+{
+	height: 30px;
+	background: #666;
+}
 
 
 #list
@@ -14,12 +19,12 @@ html, body {
 
 }
 
-#list li .btn-group
+#list li.generic .btn-group
 {
 	margin-right: 5px;
 }
 
-#list li .btn-group .btn
+#list li.generic .btn-group .btn
 {
 	width: 25px;
 	height: 25px;
@@ -29,13 +34,62 @@ html, body {
 	color: #444;
 }
 
-#list li .btn-group .btn span.glyphicon {
+#list li.generic .btn-group .btn span.glyphicon {
 	top: 0px;
 }
 
+#list li.generic {
+	cursor: pointer;
+	text-indent: 20px;
+	height: 35px;
+	line-height: 35px;
+	border-bottom: solid 1px #eee;
+}
+
+#list li.generic:hover
+{
+	background: #eee;
+}
+
+
+#list li.album
+{
+	margin-top: 15px;
+	margin-bottom: 10px;
+}
+
+#list li.album .row
+{
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+#list li.album .cover
+{
+	padding-right: 0px;
+}
+#list li.album .cover img
+{
+	width: 80%;
+	margin-left: 10%;
+	height: auto;
+}
+#list li.album .info
+{
+	text-overflow: ellipsis;
+	wrap: nowrap;
+	padding-left: 0px;
+}
+
+#list li.album .info h3
+{
+	margin-top: 0px;
+}
+
+
 #list-container
 {
-	top: 90px;
+	top: 70px;
 	bottom: 240px;
 	position: fixed;
 	overflow: auto;
@@ -47,7 +101,7 @@ html, body {
 	background: #ddd;
 	height: 40px;
 	position: fixed;
-	top: 50px;
+	top: 30px;
 	line-height: 30px;
 }
 
@@ -78,7 +132,7 @@ html, body {
 	width: 70%;
 	position: fixed;
 	left: 30%;
-	top: 50px;
+	top: 30px;
 	bottom: 240px;
 	position: fixed;
 	overflow: auto;
@@ -101,13 +155,6 @@ html, body {
 	font-size: 14px;
 }
 
-#list li {
-	cursor: pointer;
-	text-indent: 20px;
-	height: 35px;
-	line-height: 35px;
-	border-bottom: solid 1px #eee;
-}
 
 #player
 {
@@ -158,7 +205,3 @@ html, body {
 	cursor: pointer;
 }
 
-#list li:hover
-{
-	background: #eee;
-}

@@ -9,14 +9,7 @@ html
 		link(href="http://fonts.googleapis.com/css?family=Open+Sans",rel="stylesheet",type="text/css")
 
 	body
-		nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse
-			.navbar-header
-				.a.navbar-brand(href="#", id="home") MusicPlayer
-			
-			form.navbar-form.navbar-right
-				.form-group
-					input.form-control(type="text", placeholder="Search")
-				button(type="submit").btn.btn-default Search
+		div#top
 
 		div#toolbar
 			.breadcrumb-folder
@@ -63,6 +56,7 @@ html
 			.jplayer
 
 
+		script(type="text/javascript", src="scripts/lodash.min.js")
 		script(type="text/javascript", src="scripts/jquery.2.0.3.min.js")
 		script(type="text/javascript", src="scripts/jQuery.jPlayer.2.5.0/jquery.jplayer.min.js")
 		script(type="text/javascript", src="scripts/moment.js")
