@@ -1,4 +1,4 @@
-var config = require("./config.js");
+var config = require("./../config.js");
 var http = require('http');
 var q = require('q');
 

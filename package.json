@@ -10,7 +10,19 @@
     "lodash": "~2.4.1",
     "node-ffprobe": "~1.2.2",
     "stream-buffers": "~0.2.5",
-    "q": "~1.0.0"
+    "q": "~1.0.0",
+    "tiny-lr": "0.0.5",
+    "gulp": "~3.5.0",
+    "gulp-clean": "~0.2.4",
+    "gulp-load-plugins": "~0.2.0",
+    "gulp-less": "~1.2.1",
+    "less": "~1.6.1",
+    "gulp-browserify": "~0.4.0",
+    "gulp-jade": "~0.4.0",
+    "event-stream": "~3.1.0",
+    "through2": "~0.4.1",
+    "gulp-livereload": "~0.2.0",
+    "gulp-open": "~0.2.8"
   },
   "devDependencies": {},
   "scripts": {

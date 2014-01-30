@@ -3,14 +3,18 @@ var express = require('express');
 var app = express();
 app.use(express.bodyParser());
 app.set('view engine', 'jade');
+app.configure(function() {
+    app.set('views', __dirname + '/dist/views');
+});
+
 var _ = require('lodash');
 var node_path = require('path');
 var fs = require('fs');
 var q = require('q');
 var ffmpeg = require('fluent-ffmpeg');
 var probe = require('node-ffprobe');
-var scanner = require('./scanner.js');
-var lastfm = require('./lastfm.js');
+var scanner = require('./server/scanner.js');
+var lastfm = require('./server/lastfm.js');
 
 function userValid(request) {
 	return true;
@@ -202,12 +206,16 @@ app.get('/api/scan', function(req, res)
 });
 
 /* client */
-app.use("/styles", express.static(__dirname + '/styles'));
-app.use("/scripts", express.static(__dirname + '/scripts'));
-app.use("/fonts", express.static(__dirname + '/fonts'));
+app.use("/styles", express.static(__dirname + '/dist/styles'));
+app.use("/scripts", express.static(__dirname + '/dist/scripts'));
+app.use("/fonts", express.static(__dirname + '/dist/fonts'));
 
 app.get('/', function(req, res) {
 	res.render('index');
 });
 
-app.listen(config.port);
+module.exports = {
+	start: function() { app.listen(config.port); }
+}
+
+
