@@ -129,8 +129,13 @@ function populateList(path)
 	});
 }
 
+function initialize() {
+	populateList();
+}
+
 module.exports = {
 	itemDragStart: itemDragStart,
 	add: add,
-	populate: populateList
+	populate: populateList,
+	initialize: initialize
 }

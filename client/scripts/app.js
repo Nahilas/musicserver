@@ -1,7 +1,7 @@
-var list = require('./list.js');
-
+var navigation = require('./navigation.js');
+var audiocontrols = require('./audiocontrols.js');
 
 $(function() {
-	list.populate();
+	navigation.initialize();
 });
 

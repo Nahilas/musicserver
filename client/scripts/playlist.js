@@ -1,12 +1,11 @@
-var player = require('./player.js');
-var api = require('./api.js');
-var util = require('./util.js');
-var list = require('./list.js');
-
-var currentSongs = [];
-var currentIndex = null;
-var dropIndex = null;
-var $playlist, currentDrag, $pause, $prev, $next;
+var audioplayer = require('./audioplayer.js'),
+	api = require('./api.js'),
+	util = require('./util.js'),
+	currentSongs = [],
+	currentIndex = null,
+	dropIndex = null,
+	$playlist, 
+	currentDrag;
 
 $(function() {
 	$playlist = $("#playlist table tbody");
@@ -16,41 +15,8 @@ $(function() {
 		play();
 	});
 
-	$pause = $("#pause");
-	$next = $("#next");
-	$prev = $("#prev");
-
-	//hookupDragDrop();
-	hookupEvents();
+	audioplayer.played.add(onPlayed);
 });
-
-
-function hookupEvents() {
-
-	$pause.click(function() {
-		if(!player.isPlaying())
-		{
-			play();
-			return;
-		}
-		
-		if($pause.is('.playing'))
-		{
-			player.pause();
-			$pause.removeClass('playing');
-		}
-		else 
-		{
-			player.resume();
-			$pause.addClass('playing');
-		}
-	});
-
-	$next.click(next);
-	$prev.click(prev);
-}
-
-
 
 /*function hookupDragDrop() {
 	document.getElementById("playlist").ondrop = function(e) {
@@ -63,6 +29,20 @@ function hookupEvents() {
 		e.preventDefault();
 	}
 }*/
+
+function onPlayed(item)
+{
+	/*var $items = $playlist.find('.item');
+	$items.removeClass('success');
+	
+	$items.each(function(i, x) {
+		console.log($(x).data('item'));
+		if($(x).parents('tr').data('item') == item)
+		{
+			$(x).addClass('success');
+		}
+	});*/
+}
 
 function addSongs(path, before, cb)
 {
@@ -86,7 +66,7 @@ function addSongs(path, before, cb)
 function playSongs(path)
 {
 	currentSongs = [];
-	addSongs(path, null, function() { currentIndex = 0; play() });
+	addSongs(path, null, function() { currentIndex = 0; play(); });
 }
 
 function play() {
@@ -96,12 +76,7 @@ function play() {
 	if(!currentIndex || currentIndex >= currentSongs.length)
 		currentIndex = 0;
 
-	$playlist.find('.item').removeClass('success');
-	$playlist.find('.item[data-index=' + currentIndex + ']').addClass('success');
-
-	$pause.addClass('playing');
-
-	player.play(currentSongs[currentIndex]);
+	audioplayer.play(currentSongs[currentIndex]);
 }
 
 function next() {
@@ -120,26 +95,24 @@ function prev() {
 function render() {
 	$playlist.html('');
 	$.each(currentSongs, function(i,x) {
-		var row = '<tr ondragenter="playlist.itemDragEnter(event)" class="item" data-index="' + i + '""><td>' + x.song + '</td><td>' + x.album + '</td><td>' + x.artist + '</td><td>' + util.secondsToTime(x.duration) + '</td></tr>';  
-
+		var row = '<tr ondragenter="playlist.itemDragEnter(event)" class="item" data-index="' + i + '""><td>' + x.song + '</td><td>' + x.album + '</td><td>' + x.artist + '</td><td>' + util.secondsToTime(x.duration) + '</td></tr>';
 		$(row).data('item', x);
 
 		$playlist.append(row);
 	});
 }
 
-function itemDragEnter(e) {
+/*function itemDragEnter(e) {
 	$("#playlist .item").removeClass("warning");
 	
 	$(e.srcElement).parent().addClass("warning");
 	dropIndex = $(e.srcElement).parent().data('index');
-}
+}*/
 
 module.exports = {
 	addSongs: addSongs,
-	play: play,
 	prev: prev,
 	next: next,
 	playSongs: playSongs,
-	itemDragEnter: itemDragEnter
+	//itemDragEnter: itemDragEnter
 }
