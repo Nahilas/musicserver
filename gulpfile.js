@@ -5,6 +5,7 @@ var es = require('event-stream');
 var through = require('through2');
 var lr = require('tiny-lr');
 var config = require('./config');
+var q = require('q');
 
 lrserver = lr();
 
@@ -35,75 +36,74 @@ function wrapTemplates()
 
 
 gulp.task('styles', function() {
-	gulp.src('client/styles/main.less')
+	return gulp.src('client/styles/main.less')
 	.pipe(plugins.less({
 		paths: [ path.join(__dirname, 'less', 'includes') ]
 	}))
-	.pipe(gulp.dest('dist/styles'))
-	.pipe(plugins.livereload(lrserver));
+	.pipe(gulp.dest('dist/styles'));
 });
 
 
 gulp.task('scripts', ['templates'], function() {
-	gulp.src('client/scripts/app.js')
+	return gulp.src('client/scripts/app.js')
 		.pipe(plugins.browserify({ debug: true }))
-		.pipe(gulp.dest('dist/scripts'))
-		.pipe(plugins.livereload(lrserver));
+		.pipe(gulp.dest('dist/scripts'));
 });
 
 gulp.task('templates', function() 
 {
-	gulp.src('client/templates/*.jade')
+	return gulp.src('client/templates/*.jade')
 		.pipe(plugins.jade({ client: true }))
 		.pipe(wrapTemplates())
-		.pipe(gulp.dest('client/scripts/templates'))
-		.pipe(plugins.livereload(lrserver));
+		.pipe(gulp.dest('client/scripts/templates'));
 });
 
 gulp.task('clean', function() {
-	es.concat(gulp.src('dist/**/**', {read: false})
+	return es.concat(gulp.src('dist/**/**', {read: false})
 		.pipe(plugins.clean({force: true})),
 	gulp.src('client/scripts/templates', { read: false })
 		.pipe(plugins.clean({force: true})));
 });
 
 gulp.task('copy', function() {
-	es.concat(gulp.src('client/views/*.jade')
+	return es.concat(gulp.src('client/views/*.jade')
 		.pipe(gulp.dest('dist/views')), 
 		gulp.src('client/fonts/*.*')
 		.pipe(gulp.dest('dist/fonts'))),
 		gulp.src('client/scripts/vendor/*.js')
-		.pipe(gulp.dest('dist/scripts/vendor'))
-		.pipe(plugins.livereload(lrserver));
+		.pipe(gulp.dest('dist/scripts/vendor'));
 });
 
 gulp.task('watch', function() {
 	lrserver.listen(35729, function(err) {
 		if(err) return console.log(err);
 
-		gulp.watch('client/styles/*.less', ['styles']);
-		gulp.watch('client/scripts/*.js', ['scripts']);
-		gulp.watch('client/templates/*.jade', ['templates']);
-		gulp.watch('client/views/*.jade', ['copy']);
+		gulp.watch('client/styles/*.less', ['reload']);
+		gulp.watch('client/scripts/*.js', ['reload']);
+		gulp.watch('client/templates/*.jade', ['reload']);
+		gulp.watch('client/views/*.jade', ['reload']);
 	});
 });
 
 gulp.task('open', function() {
-	gulp.src('./server.js') //dummy for gulp to run open
+	return gulp.src('./server.js') //dummy for gulp to run open
 	.pipe(plugins.open("", {
 		url: 'http://localhost:' + config.port
 	}));
 });
 
 
-gulp.task('build', ['clean'], function() {
-	gulp.start('copy', 'templates', 'styles', 'scripts', 'watch', 'open');
+gulp.task('build', ['copy', 'styles', 'scripts'], function(cb) { cb(); });
+gulp.task('default', ['clean'], function() {
+
+	gulp.start('build', function() {
+		server.start();
+		gulp.start('watch', 'open');		
+	});
+
 });
 
-gulp.task('server', ['build'], function() {
-	server.start();
-})
-
-gulp.task('default', function() {
-	gulp.start('server');
+gulp.task('reload', ['build'], function() {
+	gulp.src('./server.js') //dummy for gulp to run livereload
+	.pipe(plugins.livereload(lrserver));
 });

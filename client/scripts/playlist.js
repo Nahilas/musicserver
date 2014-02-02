@@ -44,8 +44,10 @@ function onPlayed(item)
 	});*/
 }
 
-function addSongs(path, before, cb)
+function addSongs(path, before)
 {
+	var deferred = $.Deferred();
+
 	api.listsongs(path).done(function(songs) {
 		if(!before)
 			currentSongs = currentSongs.concat(songs);
@@ -56,17 +58,20 @@ function addSongs(path, before, cb)
 		}
 
 		render();
-		if(cb)
-		{
-			cb();
-		}
+		deferred.resolve();
 	});
+
+	return deferred.promise;
 }
 
 function playSongs(path)
 {
 	currentSongs = [];
-	addSongs(path, null, function() { currentIndex = 0; play(); });
+
+	addSongs(path, null).done(function() { 
+		currentIndex = 0; 
+		play(); 
+	});
 }
 
 function play() {

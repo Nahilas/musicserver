@@ -15,6 +15,7 @@ var $jPlayer,
 
 $(function() {
 	$jPlayer = $("#jPlayer");
+	
 	$jPlayer.jPlayer({ 
 		supplied: 'mp3',
 		timeupdate: updated,
