@@ -44,34 +44,25 @@ function onPlayed(item)
 	});*/
 }
 
-function addSongs(path, before)
+function addSongs(songs, before)
 {
-	var deferred = $.Deferred();
+	if(!before)
+		currentSongs = currentSongs.concat(songs);
+	else {
+		var after = currentSongs.splice(before, currentSongs.length);
+		currentSongs = currentSongs.concat(songs, after);
+	}
 
-	api.listsongs(path).done(function(songs) {
-		if(!before)
-			currentSongs = currentSongs.concat(songs);
-		else {
-
-			var after = currentSongs.splice(before, currentSongs.length);
-			currentSongs = currentSongs.concat(songs, after);
-		}
-
-		render();
-		deferred.resolve();
-	});
-
-	return deferred.promise;
+	render();
 }
 
-function playSongs(path)
+function playSongs(songs)
 {
 	currentSongs = [];
 
-	addSongs(path, null).done(function() { 
-		currentIndex = 0; 
-		play(); 
-	});
+	addSongs(songs);
+	currentIndex = 0; 
+	play(); 
 }
 
 function play() {
@@ -118,6 +109,6 @@ module.exports = {
 	addSongs: addSongs,
 	prev: prev,
 	next: next,
-	playSongs: playSongs,
+	playSongs: playSongs
 	//itemDragEnter: itemDragEnter
 }

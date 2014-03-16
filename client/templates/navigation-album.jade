@@ -1,0 +1,13 @@
+li.album
+	.row
+		.col-xs-4.cover
+			img(src=(cover || '/images/no-cover.png'))
+		.col-xs-8.info
+			h3=name
+			h5 2007
+			h5=(items.length + " songs")
+			.btn-group
+				button.btn.btn-default.play
+					span.glyphicon.glyphicon-play
+				button.btn.btn-default.add
+					span.glyphicon.glyphicon-log-in

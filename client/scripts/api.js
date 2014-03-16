@@ -16,6 +16,18 @@ var list = function(path)
 	});
 }
 
+var db = function()
+{
+	return $.ajax({
+		method: 'POST',
+		url: '/api/db',
+		cache: false,
+		contentType: 'application/json',
+		processData: false,
+		dataType: 'json'
+	});
+}
+
 var listsongs = function(path)
 {
 	if(!path)
@@ -34,7 +46,27 @@ var listsongs = function(path)
 	});
 }
 
+var song = function(path)
+{
+	if(!path)
+	{
+		return;
+	}
+
+	return $.ajax({
+		method: 'POST',
+		url: '/api/song',
+		cache: false,
+		contentType: 'application/json',
+		data: JSON.stringify({ path: path }),
+		processData: false,
+		dataType: 'json'
+	});
+}
+
 module.exports = {
 	list: list,
-	listsongs: listsongs
+	listsongs: listsongs,
+	song: song,
+	db: db
 };

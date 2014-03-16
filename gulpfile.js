@@ -71,7 +71,9 @@ gulp.task('copy', function() {
 		gulp.src('client/fonts/*.*')
 		.pipe(gulp.dest('dist/fonts'))),
 		gulp.src('client/scripts/vendor/*.js')
-		.pipe(gulp.dest('dist/scripts/vendor'));
+		.pipe(gulp.dest('dist/scripts/vendor'),
+		gulp.src('client/images/*.*')
+		.pipe(gulp.dest('dist/images')));
 });
 
 gulp.task('watch', function() {

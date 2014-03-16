@@ -277,5 +277,5 @@ function setInfo(item, path)
 
 module.exports = {
 	scan: scan,
-	setInfo: setInfo
+	data: function() { loadcache(); return cache; }
 };

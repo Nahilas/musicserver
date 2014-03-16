@@ -1,52 +1,53 @@
 var api = require('./api.js');
 var playlist = require('./playlist.js');
+var library = require('./library.js');
 var _ = require('./vendor/lodash.min.js');
+var templates = {
+	itemDefault: require('./templates/navigation-default.js'),
+	itemAlbum: require('./templates/navigation-album.js')
+};
 
-var $list, $up, currentPath = [];
+var $list, $up, currentPath = [], outerScroll = 0;
 $(function() {
 	$list = $("#list");
 	$up = $("#up");
 	$breadcrumb = $(".breadcrumb-folder");
 
 	$list.on('click', 'li', function() {
-		var item = $(this).data('item');
+		var path = $(this).data('path');
 
-		if($(this).data('action') === 'navigate')
-			navigate(item.name);
+		if(path.length === 1)
+			navigate(path);
+	});
+
+	$list.on('dblclick', 'li', function() {
+		var path = $(this).data('path');
+
+		if(path.length !== 1)
+			play(path);
 	});
 
 	$list.on('click', '.add', function(e) {
 		e.stopPropagation();
-		add($(this).parents('li').data('item'));			
+		add($(this).parents('li').data('path'));
 	});
 
 	$list.on('click', '.play', function(e) {
 		e.stopPropagation();
-		play($(this).parents('li').data('item'));
-	});
-
-	$("#home").click(function() {
-		currentPath = [];
-		populateList();
+		play($(this).parents('li').data('path'));
 	});
 
 	$up.click(up);
 });
 
-function add(item, before)
+function add(path, before)
 {
-	var path = currentPath.slice(0);
-	path.push(item.name)
-		
-	playlist.addSongs(path, before);
+	playlist.addSongs(library.getSongs(path), before);
 }
 
-function play(item)
+function play(path)
 {
-	var path = currentPath.slice(0);
-	path.push(item.name)
-		
-	playlist.playSongs(path);
+	playlist.playSongs(library.getSongs(path));
 }
 
 function itemDragStart(e)
@@ -64,15 +65,14 @@ function up() {
 	if(currentPath.length === 0)
 		$up.addClass('hide');
 
+
 	populateList(currentPath);
 }
 
-function navigate(name)
+function navigate(path)
 {
 	$up.removeClass('hide');
-	currentPath.push(name);
-
-	populateList(currentPath);
+	populateList(path);
 }
 
 function setBreadcrumb() {
@@ -82,55 +82,58 @@ function setBreadcrumb() {
 }
 
 
-function renderDefault(item)
+function renderDefault(item, path)
 {
-	$.each(item.items, function(i,x) {
-		var li = $('<li data-action="navigate" ondragstart="list.itemDragStart(event)" draggable="true" class="generic">' + (x.isFile ? x.song : x.name) + '<div class="btn-group pull-right"><button type="button" class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button><button type="button" class="btn btn-default add"><span class="glyphicon glyphicon-log-in"></span></button></li></div>');
-		li.data('item', x);
+	$.each(_.sortBy(item.items, 'name'), function(i,x) {
+		var li = $(templates.itemDefault(x));
 		$list.append(li);
+
+		var itemPath = path.slice(0);
+		itemPath.push(x.name);
+		$(li).data('path', itemPath);
+
+		setTimeout(function() { li.addClass('enter'); }, 10);
 	});
 }
 
-function renderArtist(item)
+function renderArtist(item, path)
 {
-	var albumTemplate = _.template('<li class="album"><div class="row">' +
-	'<div class="col-xs-4 cover"><img src="<%=cover%>" /></div>' +
-	'<div class="col-xs-8 info"><h3><%=name%></h3><h5>2007</h5><h5><%=items.length%> songs</h5></div>' +
-	'</div></li>');
-
 	_.each(item.items, function(x) 
 	{
-		x.cover = _.find(x.images, function(y) { return y.size === 'large'; })['#text'];
-		$list.append(albumTemplate(x))
+		var cover = _.find(x.images, function(y) { return y.size === 'large'; });
+		x.cover = cover ? cover['#text'] : null;
 
-		$.each(x.items, function(i,x) {
-			var li = $('<li data-action="navigate" ondragstart="list.itemDragStart(event)" draggable="true" class="generic">' + (x.isFile ? x.song : x.name) + '<div class="btn-group pull-right"><button type="button" class="btn btn-default play"><span class="glyphicon glyphicon-play"></span></button><button type="button" class="btn btn-default add"><span class="glyphicon glyphicon-log-in"></span></button></li></div>');
-			li.data('item', x);
-			$list.append(li);
-		});
+		var album = $(templates.itemAlbum(x));
+		$list.append(album)
+
+		var albumPath = path.slice(0);
+		albumPath.push(x.name);
+		album.data('path', albumPath);
+
+		renderDefault(x, albumPath.slice(0));
+
+		setTimeout(function() { album.find('.row').addClass('enter'); }, 10);
 	});
 }
 
 
 function populateList(path)
 {
-	api.list(path).done(function(item) {
-		setBreadcrumb();
-		$list.html('');
+	$list.html('');
+	
+	path = path || [];
+	currentPath = path;
 
-		if(item.parent && item.parent.summary)
-		{
-			renderArtist(item);
-		}
-		else
-		{
-			renderDefault(item);
-		}
-	});
+	$list.scrollTop(0);
+
+	if(currentPath.length === 1)
+		renderArtist(library.get(currentPath), currentPath.slice(0));
+	else
+		renderDefault(library.get(currentPath), currentPath.slice(0));
 }
 
 function initialize() {
-	populateList();
+	library.initialize().then(populateList);
 }
 
 module.exports = {

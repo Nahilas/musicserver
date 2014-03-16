@@ -6080,10 +6080,20 @@ body {
 }
 #list li.generic {
   cursor: pointer;
+  text-overflow: ellipsis;
+  user-select: none;
+  -webkit-user-select: none;
   text-indent: 20px;
   height: 35px;
   line-height: 35px;
   border-bottom: solid 1px #eee;
+  margin-left: -100%;
+}
+#list li.generic.enter {
+  transition-property: margin;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  margin-left: 0px;
 }
 #list li.generic:hover {
   background: #eee;
@@ -6092,9 +6102,24 @@ body {
   margin-top: 15px;
   margin-bottom: 10px;
 }
+#list li.album .btn-group .btn {
+  width: 35px;
+  height: 35px;
+  padding: 0;
+  font-size: 17px;
+  color: #444;
+}
 #list li.album .row {
   margin-left: 0px;
   margin-right: 0px;
+  min-width: 512px;
+  opacity: 0;
+}
+#list li.album .row.enter {
+  transition-property: opacity;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+  opacity: 1;
 }
 #list li.album .cover {
   padding-right: 0px;

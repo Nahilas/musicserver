@@ -67,6 +67,10 @@ function setInfo(item, path)
 		item.stream = '/api/stream?path=' + encodeURIComponent(str);
 	}
 
+	var itemPath = _.clone(path)
+	itemPath.push(item.name);
+	item.path = itemPath;
+
 	scanner.setInfo(item, path);
 }
 
@@ -95,6 +99,15 @@ function filteredReadDir(abs)
 	});	
 }
 
+app.post('/api/song', function(req, res) {
+	var path = req.body.path;
+
+	var song = { isFile: true, name: req.body.path.pop() };
+	setInfo(song, path);
+
+	res.send(song);
+});
+
 app.post('/api/listsongs', function(req, res)
 {
 	var songs = [];
@@ -115,7 +128,7 @@ app.post('/api/listsongs', function(req, res)
 
 			var song = {
 				isFile: true,
-				name: x,
+				name: x
 			};
 			setInfo(song, path);
 			songs.push(song);
@@ -158,11 +171,17 @@ app.post('/api/list', function(req, res) { //{ path: ['','',''] }
 	function(x) {
 		var item = {
 			isFile: !fs.lstatSync(abs + x).isDirectory(),
-			name: x
+			name: x,
 		}; 
 
 		if(expand)
 			setInfo(item, req.body.path);
+		else
+		{
+			var itemPath = _.clone(req.body.path);
+			itemPath.push(x);
+			item.path = itemPath;
+		}
 
 		return item;
 	});
@@ -190,6 +209,10 @@ function createStream(abs, res) {
 	    .writeToStream(res);
 }
 
+app.post('/api/db', function(req, res) {
+	res.send(scanner.data());
+});
+
 app.get('/api/stream', function(req, res)
 {
 	var abs = config.media + req.query.path;
@@ -209,6 +232,7 @@ app.get('/api/scan', function(req, res)
 app.use("/styles", express.static(__dirname + '/dist/styles'));
 app.use("/scripts", express.static(__dirname + '/dist/scripts'));
 app.use("/fonts", express.static(__dirname + '/dist/fonts'));
+app.use("/images", express.static(__dirname + '/dist/images'));
 
 app.get('/', function(req, res) {
 	res.render('index');
