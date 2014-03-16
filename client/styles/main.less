@@ -170,7 +170,7 @@ html, body {
 	user-select: none;
 }
 
-#playlist .item.dragover {
+#playlist .item.dragenter {
 	border-top: dotted 2px black;
 }
 
@@ -230,3 +230,23 @@ html, body {
 	cursor: pointer;
 }
 
+
+
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+tr.placeholder {
+  position: relative;
+  /** More li styles **/
+}
+tr.placeholder:before {
+  position: absolute;
+  /** Define arrowhead **/
+}

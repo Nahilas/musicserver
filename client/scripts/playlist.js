@@ -17,7 +17,16 @@ $(function() {
 	$playlist = $("#playlist table tbody");
 
 	$playlist.on('dblclick', '.item', function(e) {
-		currentIndex = $(this).data('index');
+		var curr = this;
+
+		$playlist.find('.item').each(function(i,x) {
+			if(x === curr)
+			{
+				currentIndex = i;
+				return false;
+			}
+		});
+
 		play();
 	});
 
@@ -36,13 +45,36 @@ $(function() {
 	});
 
 	mousetrap.bind('del', deleteSelected);
+
+	$('#playlist table').sortable({
+		containerSelector: 'table',
+		itemPath: '> tbody',
+		itemSelector: 'tr',
+		placeholder: '<tr class="placeholder"/>',
+		onDrop: function($item, container, _super)
+		{
+			var newOrder = [];
+
+			$playlist.find('.item').each(function(i,x) 
+			{
+				newOrder.push(_.find(currentSongs, function(y) {
+					return y.stream === $(x).data('stream');
+				}));
+			});
+
+			currentSongs = newOrder;
+			_super($item);
+		}
+	});
 });
+
+
 
 function deleteSelected() 
 {
 	for(var i = 0; i < currentSongs.length; i++)
 	{
-		if(_.find(selectedRows, function(x) { return currentSongs[i].stream === $(x).attr('id'); })) {
+		if(_.find(selectedRows, function(x) { return currentSongs[i].stream === $(x).data('stream'); })) {
 			currentSongs.splice(i, 1);
 			i--;
 		}
@@ -128,12 +160,17 @@ function play() {
 	if(!currentIndex || currentIndex >= currentSongs.length)
 		currentIndex = 0;
 
-	audioplayer.play(currentSongs[currentIndex]);
+	var song = currentSongs[currentIndex];
+	audioplayer.play(song);
 	
-	/*var $items = $playlist.find('.item');
+	$playlist.find('span.playing').addClass('hide');
+	$playlist.find('.item').each(function(i,x) {
 
-	$items.removeClass('success');
-	$playlist.find('.item[data-index="' + currentIndex + '"]').addClass('success');*/
+		if($(x).data('stream') === song.stream)
+		{
+			$(x).find('.playing').removeClass('hide');
+		}
+	});
 }
 
 function next() {

@@ -1,5 +1,8 @@
-tr.item(id=stream)
-	td=song
+tr.item(data-stream=stream)
+	td
+		span.glyphicon.glyphicon-volume-up.playing.hide
+		span &nbsp;
+		span=song
 	td=album
 	td=artist
 	td=duration
