@@ -5886,6 +5886,15 @@ body {
 #list li.generic .btn-group {
   margin-right: 5px;
 }
+#list li.alphabet-letter {
+  font-size: 20px;
+  font-weight: bold;
+  text-indent: 10px;
+  margin-top: 15px;
+}
+#list li.alphabet-letter:first-child {
+  margin-top: 5px;
+}
 #list li.generic .btn-group .btn {
   width: 25px;
   height: 25px;
@@ -5969,7 +5978,7 @@ body {
   font-size: 20px;
   float: left;
 }
-#artist {
+h2.artist {
   margin: 0;
   line-height: 50px;
   text-indent: 11px;
@@ -6006,6 +6015,7 @@ body {
   background: #eeeeee;
   position: fixed;
   bottom: 0px;
+  border-top: solid 1px #aaa;
   left: 0px;
 }
 #player #pause .glyphicon-pause {

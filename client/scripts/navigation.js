@@ -11,7 +11,7 @@ var $list, $up, currentPath = [], outerScroll = 0;
 $(function() {
 	$list = $("#list");
 	$up = $("#up");
-	$artist = $("#artist");
+	$artist = $('h2.artist');
 
 	$list.on('click', 'li', function() {
 		var path = $(this).data('path');
@@ -82,9 +82,15 @@ function setBreadcrumb() {
 }
 
 
-function renderDefault(item, path)
+function renderDefault(item, path, showAlphabet)
 {
+	var lastLetter = null;
 	$.each(_.sortBy(item.items, 'name'), function(i,x) {
+		var letter = x.name.substring(0,1)
+
+		if(showAlphabet && lastLetter !== letter)
+			$list.append('<li class="alphabet-letter">' + letter + '</li>')
+
 		var li = $(templates.itemDefault(x));
 		$list.append(li);
 
@@ -92,6 +98,7 @@ function renderDefault(item, path)
 		itemPath.push(x.name);
 		$(li).data('path', itemPath);
 
+		lastLetter = x.name.substring(0,1);
 		setTimeout(function() { li.addClass('enter'); }, 10);
 	});
 }
@@ -130,7 +137,7 @@ function populateList(path)
 	if(currentPath.length === 1)
 		renderArtist(library.get(currentPath), currentPath.slice(0));
 	else
-		renderDefault(library.get(currentPath), currentPath.slice(0));
+		renderDefault(library.get(currentPath), currentPath.slice(0), true);
 }
 
 function initialize() {
