@@ -11,7 +11,7 @@ var $list, $up, currentPath = [], outerScroll = 0;
 $(function() {
 	$list = $("#list");
 	$up = $("#up");
-	$breadcrumb = $(".breadcrumb-folder");
+	$artist = $("#artist");
 
 	$list.on('click', 'li', function() {
 		var path = $(this).data('path');
@@ -120,10 +120,11 @@ function renderArtist(item, path)
 function populateList(path)
 {
 	$list.html('');
-	
+
 	path = path || [];
 	currentPath = path;
 
+	$artist.html(path.length === 0 ? 'Library' : path[0])
 	$list.scrollTop(0);
 
 	if(currentPath.length === 1)

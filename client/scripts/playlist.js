@@ -1,11 +1,17 @@
 var audioplayer = require('./audioplayer.js'),
 	api = require('./api.js'),
 	util = require('./util.js'),
+	mousetrap = require('./vendor/mousetrap.min.js'),
 	currentSongs = [],
 	currentIndex = null,
 	dropIndex = null,
 	$playlist, 
-	currentDrag;
+	currentDrag,
+	selectedRows = [],
+	_ = require('./vendor/lodash.min.js'),
+	templates = {
+		item: require('./templates/playlist-item.js')
+	};
 
 $(function() {
 	$playlist = $("#playlist table tbody");
@@ -15,33 +21,72 @@ $(function() {
 		play();
 	});
 
-	audioplayer.played.add(onPlayed);
+	$playlist.on('click', '.item', function(e) {
+		if(e.ctrlKey)
+		{
+			ctrlSelect.call(this);
+		}
+		else if(e.shiftKey)
+		{
+			shiftSelect.call(this);
+		}
+		else {
+			select([ this ]);
+		}
+	});
+
+	mousetrap.bind('del', deleteSelected);
 });
 
-/*function hookupDragDrop() {
-	document.getElementById("playlist").ondrop = function(e) {
-		e.preventDefault();
-		list.add(JSON.parse(e.dataTransfer.getData("item")), dropIndex);
-		dropIndex = null;
-	}
-
-	document.getElementById("playlist").ondragover = function(e) {
-		e.preventDefault();
-	}
-}*/
-
-function onPlayed(item)
+function deleteSelected() 
 {
-	/*var $items = $playlist.find('.item');
-	$items.removeClass('success');
-	
-	$items.each(function(i, x) {
-		console.log($(x).data('item'));
-		if($(x).parents('tr').data('item') == item)
-		{
-			$(x).addClass('success');
+	for(var i = 0; i < currentSongs.length; i++)
+	{
+		if(_.find(selectedRows, function(x) { return currentSongs[i].stream === $(x).attr('id'); })) {
+			currentSongs.splice(i, 1);
+			i--;
 		}
-	});*/
+	}
+
+	currentIndex = 0;
+	render();
+}
+
+function shiftSelect() {
+	if(selectedRows.length === 0)	
+		return;
+
+	var items = $playlist.find('.item');
+	var startIndex = 0;
+	var endIndex = 0;
+	var curr = this;
+
+	items.each(function(i,x) 
+	{
+		if(x === selectedRows[0])
+			startIndex = i;
+
+		if(x === curr)
+			endIndex = i;
+	});
+
+	if(startIndex > endIndex)
+	{
+		var n = endIndex;
+		endIndex = startIndex;
+		startIndex = n;
+	}
+
+	selectedRows = items.slice(startIndex, endIndex + 1);
+	select(selectedRows);
+}
+
+function ctrlSelect() {
+	if(!_.contains(selectedRows, this))
+	{
+		selectedRows.push(this);
+		select(selectedRows);
+	}	
 }
 
 function addSongs(songs, before)
@@ -54,6 +99,17 @@ function addSongs(songs, before)
 	}
 
 	render();
+}
+
+function select(rows)
+{
+	selectedRows = rows;
+
+	$playlist.find('.item').removeClass('info');
+
+	_.each(rows, function(x) {
+		$(x).addClass('info')
+	});
 }
 
 function playSongs(songs)
@@ -73,6 +129,11 @@ function play() {
 		currentIndex = 0;
 
 	audioplayer.play(currentSongs[currentIndex]);
+	
+	/*var $items = $playlist.find('.item');
+
+	$items.removeClass('success');
+	$playlist.find('.item[data-index="' + currentIndex + '"]').addClass('success');*/
 }
 
 function next() {
@@ -91,24 +152,22 @@ function prev() {
 function render() {
 	$playlist.html('');
 	$.each(currentSongs, function(i,x) {
-		var row = '<tr ondragenter="playlist.itemDragEnter(event)" class="item" data-index="' + i + '""><td>' + x.song + '</td><td>' + x.album + '</td><td>' + x.artist + '</td><td>' + util.secondsToTime(x.duration) + '</td></tr>';
-		$(row).data('item', x);
+		var row = $(templates.item({
+			stream: x.stream,
+			song: x.song,
+			artist: x.artist,
+			album: x.album,
+			duration: util.secondsToTime(x.duration)
+		}));
 
 		$playlist.append(row);
+		row.data('item', x);
 	});
 }
-
-/*function itemDragEnter(e) {
-	$("#playlist .item").removeClass("warning");
-	
-	$(e.srcElement).parent().addClass("warning");
-	dropIndex = $(e.srcElement).parent().data('index');
-}*/
 
 module.exports = {
 	addSongs: addSongs,
 	prev: prev,
 	next: next,
 	playSongs: playSongs
-	//itemDragEnter: itemDragEnter
 }
