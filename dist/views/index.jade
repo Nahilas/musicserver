@@ -8,14 +8,33 @@ html
 		link(href="http://fonts.googleapis.com/css?family=Open+Sans",rel="stylesheet",type="text/css")
 
 	body
+
+		div#status
+			img(src="/images/ikon-512.png")
+			.pull-right Library: 512 albums, 2156 tracks, 452.3 hours
+
 		div#top
-			.button.btn.btn-default.hide#up 
-				span.glyphicon.glyphicon-circle-arrow-left
-			h2.artist Library
+			.library
+				.button.btn.btn-default.hide#up 
+					span.glyphicon.glyphicon-circle-arrow-left
+				h2.artist Library
+				.arrow-right
+			.playlist
+				h2 Playlist
 
 
 		div#list-container
 			ul#list
+
+
+		- var alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+		- var height = (100 / alphabet.length);
+
+		div#alphabet-navigation
+			for a in alphabet
+				.letter(style="height: " + height + "%")
+					a(href="#" + a)=a				
+
 		div#playlist
 			table.table.table-hover.table-condensed
 				thead
@@ -29,7 +48,14 @@ html
 
 		div#player
 			.row
-				.col-md-6.col-md-offset-3
+				.col-md-4.col-md-offset-2
+					img(src="/images/no-cover.png").pull-right
+
+				.col-md-4
+					h3#song Song
+					h4#artist Artist
+					h5#album Album
+
 					.btn-group
 						.btn.btn-default#prev 
 							span.glyphicon.glyphicon-backward
@@ -39,17 +65,9 @@ html
 						.btn.btn-default#next
 							span.glyphicon.glyphicon-forward
 
-					.song-progress(style="width:100%; margin-top: 50px")
-						.pull-left#position 0:00
-						.pull-right#duration 0:00
-						.progress(style="margin: auto; width: 85%")
-							.progress-bar.progress-bar-info(style="width: 0%")
+			div#progress
+				.indicator
 
-					.text-center
-						h3#song 
-						h4#artist
-						h5#album 
-			
 			div#jPlayer
 
 

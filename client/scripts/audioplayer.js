@@ -21,7 +21,7 @@ $(function() {
 		timeupdate: updated,
 		ended: function() {
 			playing = false;
-			audiplayer.ended.dispatch();
+			audioplayer.ended.dispatch();
 		}
 	});
 });

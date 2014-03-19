@@ -89,7 +89,7 @@ function renderDefault(item, path, showAlphabet)
 		var letter = x.name.substring(0,1)
 
 		if(showAlphabet && lastLetter !== letter)
-			$list.append('<li class="alphabet-letter">' + letter + '</li>')
+			$list.append('<li class="alphabet-letter" id="' + letter + '">' + letter + '</li>')
 
 		var li = $(templates.itemDefault(x));
 		$list.append(li);

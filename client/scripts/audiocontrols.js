@@ -12,7 +12,7 @@ var util = require('./util.js'),
 	$prev;
 
 $(function() {
-	$progress = $(".progress-bar");
+	$progress = $("#progress .indicator");
 	$duration = $("#duration");
 	$position = $("#position");
 	$song = $("#song");

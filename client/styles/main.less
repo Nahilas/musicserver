@@ -6,19 +6,147 @@ html, body {
 	font-family: 'Open Sans', Verdana;
 }
 
-#top
-{
-	height: 50px;
-	background: #666;
+
+/* status */
+@status-height: 30px;
+@status-background: #333;
+
+/* top */
+@top-height: 50px;
+@top-background: #666;
+@top-playlist-background: #444;
+
+/* library */
+@library-width: 50%;
+
+/* playlist */
+
+/* player */
+@player-height: 240px;
+@player-background: #ccc;
+
+#status {
+	height: @status-height;
+	width: 100%;
+	background: @status-background;
+	img {
+		height: @status-height - 4px;
+		margin-top: 2px;
+		margin-left: 5px;
+		width: auto;
+	}
+
+	.pull-right
+	{
+		color: #eee;
+		line-height: @status-height;
+		margin-right: 5px;
+	}
 }
 
+#top
+{
+	height: @top-height;
+	background: @top-background;
+
+
+	h2
+	{
+		margin: 0;
+		line-height: 50px;
+		text-indent: 11px;
+		color: #eee;
+		float: left;
+	}
+
+	.library {
+		width: 50%;
+		float: left;
+
+		#up
+		{
+			margin-left: 8px;
+			margin-top: 8px;
+			font-size: 20px;
+			float: left;
+		}
+
+		.arrow-right {
+			width: 0; 
+			height: 0; 
+			border-top: @top-height / 2 solid transparent;
+			border-bottom: @top-height / 2 solid transparent;
+			border-left: @top-height / 3 solid @top-background;
+			float: right;
+			background: @top-playlist-background;
+		}
+
+	}	
+	
+	.playlist
+	{
+		color: #fff;
+		width: 50%;
+		height: 100%;
+		float: left;
+		background: #444;
+	}
+}
+
+#alphabet-navigation {
+	position: fixed;
+	top: @top-height + @status-height;
+	bottom: @player-height;
+	width: 40px;
+	background: #888;
+
+	.letter {
+		width: 100%;
+		
+		text-align: center;
+		cursor: pointer;
+
+		a, a:visited, a:hover {
+			display: block;
+			width: 100%;
+			height: 100%;
+			color: #fff;
+			text-decoration: none;
+		}
+
+		&:hover {
+			background: #aaa;
+		}
+
+		&.active {
+			background: #ccc;
+		}
+	}
+
+
+}
+
+#list-container
+{
+	width: @library-width;
+	top: @top-height + @status-height;
+	bottom: 240px;
+	position: fixed;
+	overflow: hidden;
+	border-right: solid 2px #ccc;
+}
 
 #list
 {
+	position: relative;
 	list-style: none;
 	padding: 0px;
-	width: 100%;
 	overflow-x: hidden;
+	overflow: auto;
+	width: 100%;
+	height: 100%;
+	right: -15px;
+	padding-left: 25px;
 }
 
 #list li.generic .btn-group
@@ -132,44 +260,14 @@ html, body {
 }
 
 
-#list-container
-{
-	top: 50px;
-	bottom: 240px;
-	position: fixed;
-	overflow: auto;
-	border-right: solid 2px #ccc;
-}
-
-#up
-{
-	margin-left: 8px;
-	margin-top: 8px;
-	font-size: 20px;
-	float: left;
-}
-
-h2.artist
-{
-	margin: 0;
-	line-height: 50px;
-	text-indent: 11px;
-	color: #eee;
-	float: left;
-}
-
-#list-container
-{
-	width: 30%;
-}
 
 
 #playlist
 {
-	width: 70%;
+	width: 100% - @library-width;
 	position: fixed;
-	left: 30%;
-	top: 50px;
+	left: @library-width;
+	top: @status-height + @top-height;
 	bottom: 240px;
 	position: fixed;
 	overflow: auto;
@@ -195,56 +293,79 @@ h2.artist
 
 #player
 {
-	height: 240px;
+	height: @player-height;
 	width: 100%;
-	background: #eeeeee;
+	background: @player-background;
 	position: fixed;
 	bottom: 0px;
 	border-top: solid 1px #aaa;
 	left: 0px;
+
+	.row {
+		margin-top: 15px;
+	}
+
+
+	#pause 
+	{
+		.glyphicon-pause {
+			display: none;
+		}
+
+		&.playing {
+			.glyphicon-pause
+			{
+				display: inline;
+			}
+		
+			.glyphicon-play
+			{
+				display: none;
+			}
+		}
+	}
+
+	img {
+		height: 70%;
+		margin-top: 2%
+	}
+
+	 .btn-group
+	{
+		width: 240px;
+		
+		display: block;
+		margin-top: 20px;
+		height: 25px;
+
+
+		.btn
+		{
+			font-size: 28px;
+			padding-top: 10px;
+			height: 50px;
+			width: 70px;
+		}
+	}
+
+	#progress {
+		height: 3px;
+		background: #999;
+		width: 80%;
+		margin: auto;
+		margin-top: 20px;
+
+		.indicator 
+		{
+			width: 0%;
+			height: 100%;
+			background: #663366
+		}
+	}
 }
 
-#player #pause .glyphicon-pause
-{
-	display: none;
-}
 
-#player #pause.playing .glyphicon-pause
-{
-	display: inline;
-}
-
-
-#player #pause.playing .glyphicon-play
-{
-	display: none;
-}
-
-
-#player .btn-group
-{
-	width: 240px;
-	margin: auto;
-	display: block;
-	margin-top: 20px;
-	height: 30px;
-}
-
-#player .btn-group .btn
-{
-	font-size: 35px;
-	padding-top: 10px;
-	height: 60px;
-	width: 80px;
-}
-
-
-#home {
-	cursor: pointer;
-}
-
-
-
+/* drag'n'drop */
 body.dragging, body.dragging * {
   cursor: move !important;
 }

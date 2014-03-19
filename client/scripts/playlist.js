@@ -66,6 +66,10 @@ $(function() {
 			_super($item);
 		}
 	});
+
+	audioplayer.ended.add(function()  {
+		next();
+	});
 });
 
 
