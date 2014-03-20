@@ -1,6 +1,7 @@
 var util = require('./util.js'),
 	audioplayer = require('./audioplayer.js'),
 	playlist = require('./playlist.js'),
+	library = require('./library.js'),
 	$progress, 
 	$duration, 
 	$position, 
@@ -9,7 +10,8 @@ var util = require('./util.js'),
 	$album, 
 	$pause, 
 	$next, 
-	$prev;
+	$prev,
+	$cover;
 
 $(function() {
 	$progress = $("#progress .indicator");
@@ -21,6 +23,7 @@ $(function() {
 	$pause = $("#pause");
 	$next = $("#next");
 	$prev = $("#prev");
+	$cover = $("#cover");
 
 	audioplayer.played.add(onPlayed);
 	audioplayer.updated.add(onUpdated);
@@ -43,6 +46,7 @@ function onPlayed(item) {
 	$song.html(item.song);
 	$artist.html(item.artist);
 	$album.html(item.album);
+	$cover.attr('src', library.getCover(item.artist, item.album, 'large'));
 
 	$pause.addClass('playing');
 };

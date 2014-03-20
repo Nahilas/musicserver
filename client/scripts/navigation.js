@@ -8,12 +8,20 @@ var templates = {
 	itemAlbum: require('./templates/navigation-album.js')
 };
 
-var $list, $up, $alphabetNavigation, currentPath = [], outerScroll = 0;
+var $list, 
+	$up, 
+	$alphabetNavigation, 
+	currentPath = [], 
+	outerScroll = 0, 
+	ScrollbarFactory = require('./scrollbarFactory.js'),
+	scrollbar;
+
 $(function() {
 	$list = $("#list");
 	$up = $("#up");
 	$artist = $('h2.artist');
 	$alphabetNavigation = $('#alphabet-navigation');
+	scrollbar = ScrollbarFactory($("#list"), $("#list-container .scrollbar"));
 
 	$list.on('click', 'li', function() {
 		var path = $(this).data('path');
@@ -38,8 +46,6 @@ $(function() {
 		e.stopPropagation();
 		play($(this).parents('li').data('path'));
 	});
-
-	$list.scroll(onScroll);
 
 	$up.click(up);
 });
@@ -112,7 +118,7 @@ function renderArtist(item, path)
 {
 	_.each(item.items, function(x)
 	{
-		var cover = _.find(x.images, function(y) { return y.size === 'large'; });
+		var cover = _.find(x.images, function(y) { return y.size === 'extralarge'; });
 		x.cover = cover ? cover['#text'] : null;
 
 		var album = $(templates.itemAlbum(x));
@@ -129,8 +135,33 @@ function renderArtist(item, path)
 }
 
 function onScroll() {
-	console.log('Scrolled-to: ' + $(this).scrollTop());
+	updateSpy();
 }
+
+var updateSpy = _.throttle(function() {
+	//Find the on larger than current scroll
+	var currScroll = $list.scrollTop() - 70;
+
+	for(var i = 0, l = letters.length; i < l; i++) {
+		if(letters[i].top > currScroll)
+		{
+			var index = i - 1;
+
+			if(index < 0)
+				index = 0;
+
+			var alphabetLetter = $alphabetNavigation.find('.letter[data-id="' + letters[index].id + '"]');
+
+			if(!alphabetLetter.hasClass('active'))
+			{
+				$alphabetNavigation.find('.letter').removeClass('active').addClass('normal');
+				alphabetLetter.addClass('active');
+			}
+
+			break;
+		}
+	}
+}, 100);
 
 function initializeScrollSpy()
 {
@@ -139,11 +170,31 @@ function initializeScrollSpy()
 	{
 		letters.push({
 			id: $(x).attr('id'),
-			top: $(x).offset().top
+			top: $(x).position().top - $(x).height() - 30,
+			positionY: $(x).position().top + 15
 		});
 	});
 
-	console.log(letters);
+	//render navigation
+	$alphabetNavigation.html('');
+
+	var letterHeight = 100 / letters.length;
+	_.each(letters, function(x) { 
+		var l = '<div class="letter" style="height: ' + letterHeight + '%" data-id="' + x.id + '">' + x.id + '</div>';
+
+		$alphabetNavigation.append(l);
+	});
+
+
+	$alphabetNavigation.find('.letter').click(function() {
+		var id = $(this).data('id');
+		var l = _.find(letters, function(x) { return x.id === id; });
+
+		if(l)
+			$list.scrollTop(l.positionY);
+	});
+
+	updateSpy();
 }
 
 function populateList(path)
@@ -162,10 +213,16 @@ function populateList(path)
 		renderDefault(library.get(currentPath), currentPath.slice(0), true);
 
 	initializeScrollSpy();
+	scrollbar.update();
 }
 
 function initialize() {
+	var deferred = $.Deferred();
+
 	populateList();
+	deferred.resolve();
+
+	return deferred.promise();
 }
 
 module.exports = {

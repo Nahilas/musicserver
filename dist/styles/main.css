@@ -5927,7 +5927,7 @@ body {
   height: 0;
   border-top: 25px solid transparent;
   border-bottom: 25px solid transparent;
-  border-left: 16.66666667px solid #666666;
+  border-left: 16.666666666666668px solid #666666;
   background: #444444;
   float: left;
 }
@@ -5940,23 +5940,24 @@ body {
 }
 #alphabet-navigation .letter {
   width: 100%;
+  color: #fff;
   text-align: center;
   cursor: pointer;
-}
-#alphabet-navigation .letter a,
-#alphabet-navigation .letter a:visited,
-#alphabet-navigation .letter a:hover {
-  display: block;
-  width: 100%;
-  height: 100%;
-  color: #fff;
-  text-decoration: none;
 }
 #alphabet-navigation .letter:hover {
   background: #aaa;
 }
 #alphabet-navigation .letter.active {
-  background: #ccc;
+  background-color: #ccc;
+  transition-property: background-color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-in;
+  margin-left: 0px;
+}
+#alphabet-navigation .letter.normal {
+  transition-property: background-color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-out;
 }
 #list-container {
   width: 50%;
@@ -5965,6 +5966,21 @@ body {
   position: fixed;
   overflow: hidden;
   border-right: solid 2px #ccc;
+}
+.scrollbar {
+  border-radius: 2px;
+  background-color: #000;
+  width: 5px;
+  top: 0px;
+  right: 3px;
+  position: absolute;
+  opacity: 0.3;
+  transition-property: opacity;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+.scrollbar.animated-hide {
+  opacity: 0;
 }
 #list {
   position: relative;
@@ -5978,7 +5994,7 @@ body {
   padding-left: 25px;
 }
 #list li.generic .btn-group {
-  margin-right: 5px;
+  margin-right: 12px;
 }
 #list li.alphabet-letter {
   font-size: 20px;
@@ -6059,13 +6075,13 @@ body {
 #list li.album .info h3 {
   margin-top: 0px;
 }
-#playlist {
+#playlist-container {
   width: 50%;
   left: 50%;
   top: 80px;
   bottom: 240px;
   position: fixed;
-  overflow: auto;
+  overflow: hidden;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -6073,10 +6089,27 @@ body {
   -ms-user-select: none;
   user-select: none;
 }
-#playlist .item.dragenter {
-  border-top: dotted 2px black;
+#playlist-container #playlist {
+  position: relative;
+  overflow-x: hidden;
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  right: -15px;
 }
-#playlist .item {
+#playlist-container #playlist #playlist {
+  position: relative;
+  overflow-x: hidden;
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  right: -15px;
+}
+#playlist-container #playlist #playlist .item {
+  cursor: pointer;
+  font-size: 14px;
+}
+#playlist-container #playlist .item {
   cursor: pointer;
   font-size: 14px;
 }

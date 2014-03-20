@@ -101,28 +101,28 @@ html, body {
 
 	.letter {
 		width: 100%;
-
+		color: #fff;
 		text-align: center;
 		cursor: pointer;
-
-		a, a:visited, a:hover {
-			display: block;
-			width: 100%;
-			height: 100%;
-			color: #fff;
-			text-decoration: none;
-		}
 
 		&:hover {
 			background: #aaa;
 		}
 
 		&.active {
-			background: #ccc;
+			background-color: #ccc;
+			transition-property: background-color;
+			transition-duration: 0.15s;
+			transition-timing-function: ease-in;
+			margin-left: 0px;
+		}
+
+		&.normal {
+			transition-property: background-color;
+			transition-duration: 0.15s;
+			transition-timing-function: ease-out;
 		}
 	}
-
-
 }
 
 #list-container
@@ -133,6 +133,25 @@ html, body {
 	position: fixed;
 	overflow: hidden;
 	border-right: solid 2px #ccc;
+
+}
+
+.scrollbar
+{
+	border-radius: 2px;
+	background-color: #000;
+	width: 5px;
+	top: 0px;
+	right: 3px;
+	position: absolute;
+	opacity: 0.3;
+	transition-property: opacity;
+	transition-duration: 0.3s;
+	transition-timing-function: ease;
+
+	&.animated-hide {
+		opacity: 0;
+	}
 }
 
 #list
@@ -150,7 +169,7 @@ html, body {
 
 #list li.generic .btn-group
 {
-	margin-right: 5px;
+	margin-right: 12px;
 }
 
 #list li.alphabet-letter {
@@ -261,7 +280,7 @@ html, body {
 
 
 
-#playlist
+#playlist-container
 {
 	width: 100% - @library-width;
 	position: fixed;
@@ -269,7 +288,7 @@ html, body {
 	top: @status-height + @top-height;
 	bottom: 240px;
 	position: fixed;
-	overflow: auto;
+	overflow: hidden;
 
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
@@ -277,17 +296,28 @@ html, body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+
+	#playlist {
+		#playlist {
+			position: relative;
+			overflow-x: hidden;
+			overflow: auto;
+			width: 100%;
+			height: 100%;
+			right: -15px;
+
+			 .item
+			{
+				cursor: pointer;
+				font-size: 14px;
+			}
+		}
+
+		#playlist
+
+	}
 }
 
-#playlist .item.dragenter {
-	border-top: dotted 2px black;
-}
-
-#playlist .item
-{
-	cursor: pointer;
-	font-size: 14px;
-}
 
 
 #player

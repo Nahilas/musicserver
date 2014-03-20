@@ -66,6 +66,44 @@ var database,
 		item.stream = '/api/stream?path=' + encodeURIComponent(str);
 	}
 
+	function getMetaData() {
+		var albumCount = 0;
+		var totalDuration = 0.0;
+		var songCount = 0;
+
+		_.each(database.items, function(x) {
+			albumCount += x.items.length;
+
+			var songs = getSongs([x.name]);
+			songCount += songs.length;
+
+			_.each(songs, function(y) {
+				if(isNaN(y.duration))
+					return;
+
+				totalDuration += parseFloat(y.duration);
+			});
+		});
+
+		return {
+			albums: albumCount,
+			songs: songCount,
+			duration: (totalDuration / 60) / 60
+		};
+	}
+
+	function getCover(artist, album, size) {
+		var album = _.find(_.find(database.items, function(x) { return x.name === artist; }).items, function(x) { return x.name === album; });
+		var cover = _.find(album.images, function(y) { return y.size === size; });
+
+		if(cover && cover['#text'] !== '')
+		{
+			return cover['#text'];
+		}		
+
+		return '/images/no-cover.png';
+	}
+
 	function getSongs(path)
 	{
 		var songs = [];
@@ -100,8 +138,6 @@ var database,
 			var grouped = [];
 			_.each(_.groupBy(songs, 'album'), function(x, p) { grouped.push(_.sortBy(x, 'track')) });
 
-
-
 			var album = grouped.pop();
 			var songs = _.sortBy(album.concat.apply(album, grouped), 'album');
 		}
@@ -112,5 +148,7 @@ var database,
 module.exports = {
 	initialize: initialize,
 	get: get,
-	getSongs: getSongs
+	getSongs: getSongs,
+	getMetaData: getMetaData,
+	getCover: getCover
 };

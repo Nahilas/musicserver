@@ -7,6 +7,8 @@ var audioplayer = require('./audioplayer.js'),
 	dropIndex = null,
 	$playlist, 
 	currentDrag,
+	ScrollbarFactory = require('./scrollbarFactory.js'),
+	scrollbar,
 	selectedRows = [],
 	_ = require('./vendor/lodash.min.js'),
 	templates = {
@@ -14,7 +16,9 @@ var audioplayer = require('./audioplayer.js'),
 	};
 
 $(function() {
+
 	$playlist = $("#playlist table tbody");
+	scrollbar = ScrollbarFactory($("#playlist"), $('#playlist-container .scrollbar'));
 
 	$playlist.on('dblclick', '.item', function(e) {
 		var curr = this;
@@ -71,8 +75,6 @@ $(function() {
 		next();
 	});
 });
-
-
 
 function deleteSelected() 
 {
@@ -204,6 +206,8 @@ function render() {
 		$playlist.append(row);
 		row.data('item', x);
 	});
+
+	scrollbar.update();
 }
 
 module.exports = {

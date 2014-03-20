@@ -11,7 +11,7 @@ html
 
 		div#status
 			img(src="/images/ikon-512.png")
-			.pull-right Library: 512 albums, 2156 tracks, 452.3 hours
+			.pull-right#metadata Library: 512 albums, 2156 tracks, 452.3 hours
 
 		div#top
 			.library
@@ -27,31 +27,28 @@ html
 
 		div#list-container
 			ul#list
-
-
-		- var alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-		- var height = (100 / alphabet.length);
+			.scrollbar
 
 		div#alphabet-navigation
-			for a in alphabet
-				.letter(style="height: " + height + "%")
-					a(href="#" + a)=a
 
-		div#playlist
-			table.table.table-hover.table-condensed
-				thead
-					tr
-						th Title
-						th Album
-						th Artist
-						th Duration
-				tbody
+
+		div#playlist-container
+			div#playlist
+				table.table.table-hover.table-condensed
+					thead
+						tr
+							th Title
+							th Album
+							th Artist
+							th Duration
+					tbody
+			.scrollbar
 
 
 		div#player
 			.row
 				.col-md-4.col-md-offset-2
-					img(src="/images/no-cover.png").pull-right
+					img(src="/images/no-cover.png").pull-right#cover
 
 				.col-md-4
 					h3#song Song
