@@ -5915,21 +5915,21 @@ body {
   font-size: 20px;
   float: left;
 }
-#top .library .arrow-right {
-  width: 0;
-  height: 0;
-  border-top: 25px solid transparent;
-  border-bottom: 25px solid transparent;
-  border-left: 16.666666666666668px solid #666666;
-  float: right;
-  background: #444444;
-}
 #top .playlist {
   color: #fff;
   width: 50%;
   height: 100%;
   float: left;
   background: #444;
+}
+#top .playlist .arrow-right {
+  width: 0;
+  height: 0;
+  border-top: 25px solid transparent;
+  border-bottom: 25px solid transparent;
+  border-left: 16.66666667px solid #666666;
+  background: #444444;
+  float: left;
 }
 #alphabet-navigation {
   position: fixed;

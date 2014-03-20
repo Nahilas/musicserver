@@ -70,19 +70,8 @@ html, body {
 			font-size: 20px;
 			float: left;
 		}
+	}
 
-		.arrow-right {
-			width: 0; 
-			height: 0; 
-			border-top: @top-height / 2 solid transparent;
-			border-bottom: @top-height / 2 solid transparent;
-			border-left: @top-height / 3 solid @top-background;
-			float: right;
-			background: @top-playlist-background;
-		}
-
-	}	
-	
 	.playlist
 	{
 		color: #fff;
@@ -90,6 +79,16 @@ html, body {
 		height: 100%;
 		float: left;
 		background: #444;
+
+		.arrow-right {
+			width: 0;
+			height: 0;
+			border-top: @top-height / 2 solid transparent;
+			border-bottom: @top-height / 2 solid transparent;
+			border-left: @top-height / 3 solid @top-background;
+			background: @top-playlist-background;
+			float: left;
+		}
 	}
 }
 
@@ -102,7 +101,7 @@ html, body {
 
 	.letter {
 		width: 100%;
-		
+
 		text-align: center;
 		cursor: pointer;
 
@@ -306,7 +305,7 @@ html, body {
 	}
 
 
-	#pause 
+	#pause
 	{
 		.glyphicon-pause {
 			display: none;
@@ -317,7 +316,7 @@ html, body {
 			{
 				display: inline;
 			}
-		
+
 			.glyphicon-play
 			{
 				display: none;
@@ -333,7 +332,7 @@ html, body {
 	 .btn-group
 	{
 		width: 240px;
-		
+
 		display: block;
 		margin-top: 20px;
 		height: 25px;
@@ -355,7 +354,7 @@ html, body {
 		margin: auto;
 		margin-top: 20px;
 
-		.indicator 
+		.indicator
 		{
 			width: 0%;
 			height: 100%;

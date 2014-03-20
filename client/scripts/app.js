@@ -1,7 +1,7 @@
 var navigation = require('./navigation.js');
 var audiocontrols = require('./audiocontrols.js');
+var library = require('./library.js');
 
 $(function() {
-	navigation.initialize();
+	library.initialize().then(navigation.initialize);
 });
-

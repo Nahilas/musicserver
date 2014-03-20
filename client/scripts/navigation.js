@@ -2,16 +2,18 @@ var api = require('./api.js');
 var playlist = require('./playlist.js');
 var library = require('./library.js');
 var _ = require('./vendor/lodash.min.js');
+var letters = [];
 var templates = {
 	itemDefault: require('./templates/navigation-default.js'),
 	itemAlbum: require('./templates/navigation-album.js')
 };
 
-var $list, $up, currentPath = [], outerScroll = 0;
+var $list, $up, $alphabetNavigation, currentPath = [], outerScroll = 0;
 $(function() {
 	$list = $("#list");
 	$up = $("#up");
 	$artist = $('h2.artist');
+	$alphabetNavigation = $('#alphabet-navigation');
 
 	$list.on('click', 'li', function() {
 		var path = $(this).data('path');
@@ -37,6 +39,8 @@ $(function() {
 		play($(this).parents('li').data('path'));
 	});
 
+	$list.scroll(onScroll);
+
 	$up.click(up);
 });
 
@@ -45,6 +49,8 @@ function add(path, before)
 	playlist.addSongs(library.getSongs(path), before);
 }
 
+
+
 function play(path)
 {
 	playlist.playSongs(library.getSongs(path));
@@ -52,7 +58,7 @@ function play(path)
 
 function itemDragStart(e)
 {
-	e.dataTransfer.setData("item", JSON.stringify($(e.srcElement).data('item')));		
+	e.dataTransfer.setData("item", JSON.stringify($(e.srcElement).data('item')));
 }
 
 
@@ -81,7 +87,6 @@ function setBreadcrumb() {
 	$breadcrumb.html(str.substring(0, str.length - 1));
 }
 
-
 function renderDefault(item, path, showAlphabet)
 {
 	var lastLetter = null;
@@ -105,7 +110,7 @@ function renderDefault(item, path, showAlphabet)
 
 function renderArtist(item, path)
 {
-	_.each(item.items, function(x) 
+	_.each(item.items, function(x)
 	{
 		var cover = _.find(x.images, function(y) { return y.size === 'large'; });
 		x.cover = cover ? cover['#text'] : null;
@@ -123,6 +128,23 @@ function renderArtist(item, path)
 	});
 }
 
+function onScroll() {
+	console.log('Scrolled-to: ' + $(this).scrollTop());
+}
+
+function initializeScrollSpy()
+{
+	letters = [];
+	$list.find('.alphabet-letter').each(function(i,x) 
+	{
+		letters.push({
+			id: $(x).attr('id'),
+			top: $(x).offset().top
+		});
+	});
+
+	console.log(letters);
+}
 
 function populateList(path)
 {
@@ -138,10 +160,12 @@ function populateList(path)
 		renderArtist(library.get(currentPath), currentPath.slice(0));
 	else
 		renderDefault(library.get(currentPath), currentPath.slice(0), true);
+
+	initializeScrollSpy();
 }
 
 function initialize() {
-	library.initialize().then(populateList);
+	populateList();
 }
 
 module.exports = {

@@ -15,12 +15,14 @@ html
 
 		div#top
 			.library
-				.button.btn.btn-default.hide#up 
+				.button.btn.btn-default.hide#up
 					span.glyphicon.glyphicon-circle-arrow-left
 				h2.artist Library
-				.arrow-right
+
 			.playlist
+				.arrow-right
 				h2 Playlist
+
 
 
 		div#list-container
@@ -33,7 +35,7 @@ html
 		div#alphabet-navigation
 			for a in alphabet
 				.letter(style="height: " + height + "%")
-					a(href="#" + a)=a				
+					a(href="#" + a)=a
 
 		div#playlist
 			table.table.table-hover.table-condensed
@@ -57,7 +59,7 @@ html
 					h5#album Album
 
 					.btn-group
-						.btn.btn-default#prev 
+						.btn.btn-default#prev
 							span.glyphicon.glyphicon-backward
 						.btn.btn-default#pause
 							span.glyphicon.glyphicon-pause
