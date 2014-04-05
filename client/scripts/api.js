@@ -1,21 +1,3 @@
-var list = function(path) 
-{
-	if(!path)
-	{
-		path = [];
-	}
-
-	return $.ajax({
-		method: 'POST',
-		url: '/api/list',
-		cache: false,
-		contentType: 'application/json',
-		data: JSON.stringify({ path: path, expand: path.length > 0 }),
-		processData: false,
-		dataType: 'json'
-	});
-}
-
 var db = function()
 {
 	return $.ajax({
@@ -28,45 +10,21 @@ var db = function()
 	});
 }
 
-var listsongs = function(path)
+var authenticate = function(username, password)
 {
-	if(!path)
-	{
-		return;		
-	}
-
 	return $.ajax({
 		method: 'POST',
-		url: '/api/listsongs',
+		url: '/api/authenticate',
 		cache: false,
 		contentType: 'application/json',
-		data: JSON.stringify({ path: path }),
+		data: JSON.stringify({ username: username, password: password }),
 		processData: false,
 		dataType: 'json'
 	});
 }
 
-var song = function(path)
-{
-	if(!path)
-	{
-		return;
-	}
-
-	return $.ajax({
-		method: 'POST',
-		url: '/api/song',
-		cache: false,
-		contentType: 'application/json',
-		data: JSON.stringify({ path: path }),
-		processData: false,
-		dataType: 'json'
-	});
-}
 
 module.exports = {
-	list: list,
-	listsongs: listsongs,
-	song: song,
-	db: db
+	db: db,
+	authenticate: authenticate
 };

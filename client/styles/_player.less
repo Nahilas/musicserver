@@ -1,0 +1,94 @@
+#player
+{
+	height: @player-height;
+	width: 100%;
+	background: @player-background;
+	position: fixed;
+	bottom: 0px;
+	border-top: solid 1px #aaa;
+	left: 0px;
+
+	.logo {
+		text-align: center;
+		height: 86%;
+		margin-top: 15px;
+
+		img {
+			height: 100%;
+		}
+	}
+
+	#pause
+	{
+		.glyphicon-pause {
+			display: none;
+		}
+
+		&.playing {
+			.glyphicon-pause
+			{
+				display: inline;
+			}
+
+			.glyphicon-play
+			{
+				display: none;
+			}
+		}
+	}
+
+	.content {
+		img {
+			height: 70%;
+			border-radius: 50%;
+			border: solid 3px #663366;
+			margin-top: 12px;
+		}
+	}
+
+	.pull-left {
+		margin-top: 15px;
+		width: 50%; 
+		padding-right: 10px;
+	}
+
+	.pull-right
+	{
+		margin-top: 15px;
+		width: 50%; 
+		padding-left: 10px;
+	}
+
+	 .btn-group
+	{
+		width: 240px;
+		display: block;
+		margin-top: 20px;
+		height: 25px;
+
+
+		.btn
+		{
+			font-size: 28px;
+			padding-top: 10px;
+			height: 50px;
+			width: 70px;
+		}
+	}
+
+	#progress {
+		position: relative;
+		height: 3px;
+		background: #999;
+		width: 80%;
+		margin: auto;
+		top: 218px;
+
+		.indicator
+		{
+			width: 0%;
+			height: 100%;
+			background: #663366
+		}
+	}
+}

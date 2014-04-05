@@ -3,12 +3,11 @@ var audioplayer = require('./audioplayer.js'),
 	util = require('./util.js'),
 	mousetrap = require('./vendor/mousetrap.min.js'),
 	currentSongs = [],
+	currentSong = null,
 	currentIndex = null,
 	dropIndex = null,
 	$playlist, 
 	currentDrag,
-	ScrollbarFactory = require('./scrollbarFactory.js'),
-	scrollbar,
 	selectedRows = [],
 	_ = require('./vendor/lodash.min.js'),
 	templates = {
@@ -18,7 +17,6 @@ var audioplayer = require('./audioplayer.js'),
 $(function() {
 
 	$playlist = $("#playlist table tbody");
-	scrollbar = ScrollbarFactory($("#playlist"), $('#playlist-container .scrollbar'));
 
 	$playlist.on('dblclick', '.item', function(e) {
 		var curr = this;
@@ -61,6 +59,9 @@ $(function() {
 
 			$playlist.find('.item').each(function(i,x) 
 			{
+				if(currentSong && currentSong.stream === $(x).data('stream'))
+					currentIndex = i;
+
 				newOrder.push(_.find(currentSongs, function(y) {
 					return y.stream === $(x).data('stream');
 				}));
@@ -74,6 +75,8 @@ $(function() {
 	audioplayer.ended.add(function()  {
 		next();
 	});
+
+	render();
 });
 
 function deleteSelected() 
@@ -166,13 +169,13 @@ function play() {
 	if(!currentIndex || currentIndex >= currentSongs.length)
 		currentIndex = 0;
 
-	var song = currentSongs[currentIndex];
-	audioplayer.play(song);
+	currentSong = currentSongs[currentIndex];
+	audioplayer.play(currentSong);
 	
 	$playlist.find('span.playing').addClass('hide');
 	$playlist.find('.item').each(function(i,x) {
 
-		if($(x).data('stream') === song.stream)
+		if($(x).data('stream') === currentSong.stream)
 		{
 			$(x).find('.playing').removeClass('hide');
 		}
@@ -194,20 +197,25 @@ function prev() {
 
 function render() {
 	$playlist.html('');
-	$.each(currentSongs, function(i,x) {
-		var row = $(templates.item({
-			stream: x.stream,
-			song: x.song,
-			artist: x.artist,
-			album: x.album,
-			duration: util.secondsToTime(x.duration)
-		}));
 
-		$playlist.append(row);
-		row.data('item', x);
-	});
+	if(currentSongs.length > 0) {
+		$.each(currentSongs, function(i,x) {
+			var row = $(templates.item({
+				stream: x.stream,
+				song: x.song,
+				playing: (currentSong && currentSong.stream === x.stream),
+				artist: x.artist,
+				album: x.album,
+				duration: util.secondsToTime(x.duration)
+			}));
 
-	scrollbar.update();
+			$playlist.append(row);
+			row.data('item', x);
+		});
+	}
+	else {
+		$playlist.html('<td class="empty">Playlist is empty! Add items to start playing music.</td>');
+	}
 }
 
 module.exports = {

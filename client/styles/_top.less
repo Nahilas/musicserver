@@ -1,0 +1,47 @@
+#top
+{
+	height: @top-height;
+	background: @top-background;
+
+
+	h2
+	{
+		margin: 0;
+		line-height: 50px;
+		text-indent: 11px;
+		color: #eee;
+		float: left;
+	}
+
+	.library {
+		width: 50%;
+		float: left;
+
+		#up
+		{
+			margin-left: 8px;
+			margin-top: 8px;
+			font-size: 20px;
+			float: left;
+		}
+	}
+
+	.playlist
+	{
+		color: #fff;
+		width: 50%;
+		height: 100%;
+		float: left;
+		background: #444;
+
+		.arrow-right {
+			width: 0;
+			height: 0;
+			border-top: @top-height / 2 solid transparent;
+			border-bottom: @top-height / 2 solid transparent;
+			border-left: @top-height / 3 solid @top-background;
+			background: @top-playlist-background;
+			float: left;
+		}
+	}
+}

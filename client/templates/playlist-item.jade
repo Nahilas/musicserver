@@ -1,8 +1,9 @@
 tr.item(data-stream=stream)
 	td
-		span.glyphicon.glyphicon-volume-up.playing.hide
-		span &nbsp;
+		span.glyphicon.glyphicon-volume-up.playing(class=(!playing ? 'hide' : ''))
+		
 		span=song
-	td=album
-	td=artist
-	td=duration
+		br
+		span(style="color: #777")
+			small=(artist + ', ' + album)
+	td.text-center(style="width: 70px")=duration

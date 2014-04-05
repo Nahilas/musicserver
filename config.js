@@ -1,7 +1,8 @@
 module.exports = {
 	media: '/home/nahilas/X-drive/Music/',
 	users: [
-		{ name: "nahilas", password: "SuperManta4Music" }
+		{ username: "nahilas", password: "SuperManta4Music" },
+		{ username: "bitter", password: "cathrine" }
 	],
 	port: 40000,
 	filetypes: ['.mp3', '.flac', '.ogg'],

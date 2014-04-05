@@ -12,28 +12,25 @@ var $list,
 	$up, 
 	$alphabetNavigation, 
 	currentPath = [], 
-	outerScroll = 0, 
-	ScrollbarFactory = require('./scrollbarFactory.js'),
-	scrollbar;
+	outerScroll = 0;
 
 $(function() {
 	$list = $("#list");
 	$up = $("#up");
 	$artist = $('h2.artist');
 	$alphabetNavigation = $('#alphabet-navigation');
-	scrollbar = ScrollbarFactory($("#list"), $("#list-container .scrollbar"));
 
 	$list.on('click', 'li', function() {
 		var path = $(this).data('path');
 
-		if(path.length === 1)
+		if(path && path.length === 1)
 			navigate(path);
 	});
 
 	$list.on('dblclick', 'li', function() {
 		var path = $(this).data('path');
 
-		if(path.length !== 1)
+		if(path && path.length !== 1)
 			play(path);
 	});
 
@@ -54,8 +51,6 @@ function add(path, before)
 {
 	playlist.addSongs(library.getSongs(path), before);
 }
-
-
 
 function play(path)
 {
@@ -138,6 +133,18 @@ function onScroll() {
 	updateSpy();
 }
 
+var deselectLetter = function(letter) 
+{
+	letter.removeClass('active');
+	new TweenLite.to(letter, 0.2, { color: '#666', backgroundColor: '#ddd', ease: Power2.easeInOut });
+}
+
+var selectLetter = function(letter)
+{
+	letter.addClass('active');
+	new TweenLite.to(letter, 0.2, { color: '#fff', backgroundColor: '#663366', ease: Power2.easeInOut });
+}
+
 var updateSpy = _.throttle(function() {
 	//Find the on larger than current scroll
 	var currScroll = $list.scrollTop() - 70;
@@ -151,13 +158,12 @@ var updateSpy = _.throttle(function() {
 				index = 0;
 
 			var alphabetLetter = $alphabetNavigation.find('.letter[data-id="' + letters[index].id + '"]');
+			var current = $alphabetNavigation.find('.letter.active');
 
-			if(!alphabetLetter.hasClass('active'))
-			{
-				$alphabetNavigation.find('.letter').removeClass('active').addClass('normal');
-				alphabetLetter.addClass('active');
+			if(current.data('id') !== alphabetLetter.data('id')) {
+				deselectLetter(current);
+				selectLetter(alphabetLetter);
 			}
-
 			break;
 		}
 	}
@@ -178,9 +184,9 @@ function initializeScrollSpy()
 	//render navigation
 	$alphabetNavigation.html('');
 
-	var letterHeight = 100 / letters.length;
+	var letterPercent = 100 / letters.length;
 	_.each(letters, function(x) { 
-		var l = '<div class="letter" style="height: ' + letterHeight + '%" data-id="' + x.id + '">' + x.id + '</div>';
+		var l = '<div class="letter" style="width: ' + letterPercent + '%" data-id="' + x.id + '">' + x.id + '</div>';
 
 		$alphabetNavigation.append(l);
 	});
@@ -193,6 +199,8 @@ function initializeScrollSpy()
 		if(l)
 			$list.scrollTop(l.positionY);
 	});
+
+	$list.scroll(onScroll);
 
 	updateSpy();
 }
@@ -213,7 +221,6 @@ function populateList(path)
 		renderDefault(library.get(currentPath), currentPath.slice(0), true);
 
 	initializeScrollSpy();
-	scrollbar.update();
 }
 
 function initialize() {

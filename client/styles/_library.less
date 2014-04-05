@@ -1,0 +1,124 @@
+#list
+{
+	width: @library-width;
+	top: @top-height + @status-height + @alphabet-navigation-height;
+	bottom: 240px;
+	position: fixed;
+	overflow-x: hidden;
+	overflow-y: auto;
+	border-right: solid 2px #ccc;
+	margin-bottom: 0px;
+	list-style-type: none;
+	padding-left: 0px;
+}
+
+#list li.generic .btn-group
+{
+	margin-right: 12px;
+}
+
+#list li.alphabet-letter {
+	font-size: 20px;
+	font-weight: bold;
+	text-indent: 10px;
+	margin-top: 15px;
+}
+
+#list li.alphabet-letter:first-child
+{
+	margin-top: 5px;
+}
+
+#list li.generic .btn-group .btn
+{
+	width: 25px;
+	height: 25px;
+	padding: 0;
+	margin-top: 4px;
+	font-size: 15px;
+	color: #444;
+}
+
+#list li.generic .btn-group .btn span.glyphicon {
+	top: 0px;
+}
+
+#list li.generic {
+	cursor: pointer;
+	text-overflow:ellipsis;
+	user-select: none;
+	-webkit-user-select: none;
+	text-indent: 20px;
+	height: 35px;
+	line-height: 35px;
+	border-bottom: solid 1px #eee;
+	margin-left: -100%;
+}
+
+#list li.generic.enter
+{
+	transition-property: margin;
+	transition-duration: 0.3s;
+	transition-timing-function: ease;
+	margin-left: 0px;
+}
+
+#list li.generic:hover
+{
+	background: #eee;
+}
+
+
+#list li.album
+{
+	margin-top: 15px;
+	margin-bottom: 10px;
+}
+
+#list li.album .btn-group .btn
+{
+	width: 35px;
+	height: 35px;
+	padding: 0;
+	font-size: 17px;
+	color: #444;
+}
+
+#list li.album .row
+{
+	margin-left: 0px;
+	margin-right: 0px;
+	min-width: 512px;
+	opacity: 0;
+}
+
+#list li.album .row.enter
+{
+	transition-property: opacity;
+	transition-duration: 0.3s;
+	transition-timing-function: ease;
+	opacity: 1;
+}
+
+#list li.album .cover
+{
+	padding-right: 0px;
+}
+#list li.album .cover img
+{
+	width: 80%;
+	margin-left: 10%;
+	height: auto;
+}
+#list li.album .info
+{
+	text-overflow: ellipsis;
+	wrap: nowrap;
+	padding-left: 0px;
+}
+
+#list li.album .info h3
+{
+	margin-top: 0px;
+}
+

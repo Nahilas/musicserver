@@ -1,0 +1,196 @@
+@responsive-player-height: 120px;
+
+@media screen and (max-height: 1000px)
+{
+	#playlist, #list, #alphabet-navigation {
+		bottom: @responsive-player-height;
+	}
+
+	#player {
+		height: @responsive-player-height;
+	
+		#album {
+			display: none;
+		}
+
+		.logo
+		{
+			margin-top: 8px;
+		}
+
+		.content
+		{
+			img {
+				margin-top: 0px;
+			}
+		}
+
+		#song {
+			font-size: 16px;
+			font-weight: bold;
+			margin: 5px;
+			margin-top: 19px;
+		}
+
+		#artist {
+			font-size: 12px;
+			margin: 5px;
+		}
+
+		.pull-right {
+			width: 50%;
+			text-align: left;
+			margin-top: -10px;
+			padding-left: 5px;
+		}
+
+		.pull-left
+		{
+			padding-right: 5px;
+		}
+
+		.btn-group {
+			margin-top: 7px;
+		}
+
+		#progress {
+			top: 109px;
+		}
+	}
+}
+/*
+@media screen and (max-width: 1023px)
+{
+	#player {
+		height: 120px;
+
+		.btn-group {
+			width: 240px;
+			position: absolute;
+			display: block;
+			height: 25px;
+			top: 12px;
+			left: 50%;
+			margin-left: -103px
+		}
+
+		img, #album
+		{
+			display: none;
+		}
+
+		#song
+		{
+			font-size: 22px;
+			position: absolute;
+			top: -35px;
+			width: 100%;
+			padding: 0px;
+			text-align: center;
+		}
+
+		#artist
+		{
+			font-size: 12px;
+			position: absolute;
+			top: 3px;
+			width: 100%;
+			left: 0%;
+			text-align: center;
+			padding: 0px;
+		}
+
+		#progress
+		{
+			position: absolute;
+			bottom: 10px;
+			left: 10%;
+		}
+	}
+
+	#playlist-container {
+		position: relative;
+		width: 100%;
+		top: 50px;
+		left: 0px;
+		z-index: 0;
+		margin-bottom: 80px;
+
+		#playlist {
+			right: 0px;
+			overflow: auto;
+		}
+	}
+
+	#list-container
+	{
+		width: 100%;
+		position: static;
+		z-index: 500;
+		display: none;
+		overflow: auto;
+
+		#list
+		{
+			overflow: auto;
+			right: 0px;
+			padding-left: 0px;
+			height: auto;
+			margin-top: 50px;
+		}
+
+		&.visible {
+			display: block;
+		}
+	}
+
+	#alphabet-navigation
+	{
+		display: none;
+	}
+
+	#top {
+		display: none;
+	}
+
+	#status
+	{
+		z-index: 1000;
+		position: fixed;
+		height: 50px;
+
+		img {
+			height: 40px;
+			margin-top: 5px;
+		}
+
+		#metadata {
+			display: none;
+		}
+
+		.responsive-library-button
+		{
+			cursor: pointer;
+			width: 50px;
+			height: 50px;
+			background: #5F5F5F;
+			font-size: 30px;
+			text-align: center;
+			margin-right: 0px;
+
+			&.active
+			{
+				background: #C9C9C9;
+			}
+
+			.glyphicon
+			{
+				line-height: 50px;
+			}
+
+
+		}
+	}
+
+
+}*/

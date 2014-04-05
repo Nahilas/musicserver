@@ -1,0 +1,6 @@
+jade = require("./../vendor/jaderuntime.js");function template(locals) {
+var buf = [];
+var jade_mixins = {};
+var locals_ = (locals || {}),username = locals_.username,password = locals_.password;
+buf.push("<p class=\"text-center\"><img src=\"/images/ikon-512.png\" style=\"width: 130px; opacity: 0;\"/></p><h2 style=\"opacity: 0\" class=\"text-center\">MusicPlayer</h2><p>&nbsp;</p><div class=\"row\"><div class=\"col-md-8 col-md-offset-2\"><form><div class=\"form-group\"><label for=\"username\">Username</label><input type=\"text\" name=\"username\"" + (jade.attr("value", username, true, false)) + " class=\"form-control\"/></div><div class=\"form-group\"><label for=\"password\">Password</label><input type=\"password\" name=\"password\"" + (jade.attr("value", password, true, false)) + " class=\"form-control\"/></div><div class=\"pull-left\"><div class=\"form-group\"><div class=\"checkbox\"><label><input type=\"checkbox\" name=\"rememberMe\"/><span>Remember me</span></label></div></div></div><div class=\"pull-right\"><button class=\"btn btn-primary\">Let's rock!</button></div></form></div></div>");;return buf.join("");
+}module.exports = template;

@@ -81,7 +81,7 @@ gulp.task('watch', function() {
 		if(err) return console.log(err);
 
 		gulp.watch('client/styles/*.less', ['reload']);
-		gulp.watch('client/scripts/*.js', ['reload']);
+		gulp.watch('client/scripts/**/*.js', ['reload']);
 		gulp.watch('client/templates/*.jade', ['reload']);
 		gulp.watch('client/views/*.jade', ['reload']);
 	});

@@ -1,0 +1,26 @@
+@dialog-width: 600px;
+@dialog-height: 500px;
+
+.dialog {
+	top: 0px;
+
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0, 0.8);
+
+	.content
+	{
+		border-radius: 5px;
+		padding: 20px;
+		position: relative;
+		width: @dialog-width;
+		height: @dialog-height;
+		top: 50%;
+		margin: auto;
+		margin-top: -1 * (@dialog-height / 2) - @status-height;
+		background: rgba(255, 255, 255, 1);
+		opacity: 10;
+	}	
+
+}

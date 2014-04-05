@@ -1,0 +1,26 @@
+p.text-center
+	img(src='/images/ikon-512.png', style="width: 130px; opacity: 0;")
+h2.text-center(style='opacity: 0') MusicPlayer
+
+p &nbsp;
+
+.row
+	.col-md-8.col-md-offset-2
+		form
+			.form-group
+				label(for="username") Username
+				input.form-control(type="text", name="username", value=username)
+
+			.form-group
+				label(for="password") Password
+				input.form-control(type="password", name="password", value=password)
+
+			.pull-left
+				.form-group
+					.checkbox
+						label
+							input(type="checkbox", name="rememberMe")
+							span Remember me
+					
+			.pull-right
+				button.btn.btn-primary Let's rock!

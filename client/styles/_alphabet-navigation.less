@@ -1,0 +1,45 @@
+#alphabet-navigation {
+	position: fixed;
+	top: @top-height + @status-height;
+	height: @alphabet-navigation-height;
+	width: @library-width;
+	background: #ddd;
+
+	.letter {
+		display: inline-block;
+		text-align: center;
+		line-height: @alphabet-navigation-height;
+		color: #666;
+		cursor: pointer;
+		font-size: 13px;
+
+		&.active {
+		}
+
+	}
+
+	/*.letter {
+		width: 100%;
+		color: #fff;
+		text-align: center;
+		cursor: pointer;
+
+		&:hover {
+			background: #aaa;
+		}
+
+		&.active {
+			background-color: #ccc;
+			transition-property: background-color;
+			transition-duration: 0.15s;
+			transition-timing-function: ease-in;
+			margin-left: 0px;
+		}
+
+		&.normal {
+			transition-property: background-color;
+			transition-duration: 0.15s;
+			transition-timing-function: ease-out;
+		}
+	}*/
+}

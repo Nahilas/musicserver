@@ -11,7 +11,9 @@ var util = require('./util.js'),
 	$pause, 
 	$next, 
 	$prev,
-	$cover;
+	$cover,
+	$content,
+	$logo;
 
 $(function() {
 	$progress = $("#progress .indicator");
@@ -24,6 +26,8 @@ $(function() {
 	$next = $("#next");
 	$prev = $("#prev");
 	$cover = $("#cover");
+	$content = $("#player .content");
+	$logo = $("#player .logo");
 
 	audioplayer.played.add(onPlayed);
 	audioplayer.updated.add(onUpdated);
@@ -42,14 +46,40 @@ function onResumed()
 	$pause.addClass('playing');
 }
 
-function onPlayed(item) {
+function setText(item)
+{
 	$song.html(item.song);
 	$artist.html(item.artist);
 	$album.html(item.album);
 	$cover.attr('src', library.getCover(item.artist, item.album, 'large'));
+}
+
+function onPlayed(item) {
+	var tl = new TimelineLite();
+
+	if($content.hasClass('hide')) //animate logo
+	{
+
+		tl.to($logo, 0.5, { rotationY: '90deg', onComplete: function() {
+			$logo.addClass('hide');
+			$content.removeClass('hide');
+		} });
+		tl.fromTo($content, 0.5, { rotationY: '-90deg' }, { rotationY: '0deg' });
+
+		setText(item);
+	}
+	else { //animate next song
+		tl.to([$song, $artist, $cover, $album], 0.25, { opacity: 0, onComplete: function() {
+			setText(item);
+		} });
+		tl.to([$song, $artist, $cover, $album], 0.25, { opacity: 1 });
+	}
+
+	tl.resume();
 
 	$pause.addClass('playing');
 };
+
 
 function onUpdated(duration, current, percent)
 {

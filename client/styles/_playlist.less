@@ -1,0 +1,44 @@
+#playlist {
+
+	width: 100% - @library-width;
+	position: fixed;
+	left: @library-width;
+	top: @status-height + @top-height;
+	bottom: 240px;
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	.glyphicon.glyphicon-volume-up.playing {
+		margin-right: 5px;
+	}
+
+	 .item
+	{
+		cursor: pointer;
+		font-size: 14px;
+	}
+
+	tr.item.info
+	{
+		td {
+			background-color: #E7EBF0;
+
+		}
+	}
+
+	.empty
+	{
+		text-align: center;
+		padding-top: 10px;
+		font-style: italic;
+		font-size: 14px;
+
+	}
+}
