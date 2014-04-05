@@ -2,6 +2,7 @@ var api = require('./api.js');
 var playlist = require('./playlist.js');
 var library = require('./library.js');
 var _ = require('./vendor/lodash.min.js');
+var artistBioDialog = require('./dialogs/artist-bio.js');
 var letters = [];
 var templates = {
 	itemDefault: require('./templates/navigation-default.js'),
@@ -111,6 +112,12 @@ function renderDefault(item, path, showAlphabet)
 
 function renderArtist(item, path)
 {
+	$('.artist-bio').click(function(e) {
+		e.preventDefault();
+
+		artistBioDialog.show(item);
+	});
+
 	_.each(item.items, function(x)
 	{
 		var cover = _.find(x.images, function(y) { return y.size === 'extralarge'; });
@@ -215,12 +222,17 @@ function populateList(path)
 	$artist.html(path.length === 0 ? 'Library' : path[0])
 	$list.scrollTop(0);
 
-	if(currentPath.length === 1)
+	if(currentPath.length === 1) {
+		$alphabetNavigation.html('<a class="pull-right artist-bio" href="#"><span class="glyphicon glyphicon-user"></span>&nbsp;Artist bio...</a>');
 		renderArtist(library.get(currentPath), currentPath.slice(0));
-	else
+	}
+	else 
+	{
 		renderDefault(library.get(currentPath), currentPath.slice(0), true);
+		initializeScrollSpy();
+	}
 
-	initializeScrollSpy();
+	
 }
 
 function initialize() {

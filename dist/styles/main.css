@@ -5873,6 +5873,13 @@ body {
   height: 100%;
   font-family: 'Open Sans', Verdana;
 }
+a {
+  color: #000;
+  font-weight: bold;
+}
+a:hover {
+  color: #663366;
+}
 /* status */
 /* top */
 /* library */
@@ -5937,30 +5944,12 @@ body {
   height: 30px;
   width: 50%;
   background: #ddd;
-  /*.letter {
-		width: 100%;
-		color: #fff;
-		text-align: center;
-		cursor: pointer;
-
-		&:hover {
-			background: #aaa;
-		}
-
-		&.active {
-			background-color: #ccc;
-			transition-property: background-color;
-			transition-duration: 0.15s;
-			transition-timing-function: ease-in;
-			margin-left: 0px;
-		}
-
-		&.normal {
-			transition-property: background-color;
-			transition-duration: 0.15s;
-			transition-timing-function: ease-out;
-		}
-	}*/
+}
+#alphabet-navigation .artist-bio {
+  line-height: 30px;
+  margin-right: 10px;
+  float: right !important;
+  font-size: 12px;
 }
 #alphabet-navigation .letter {
   display: inline-block;
@@ -5968,6 +5957,19 @@ body {
   line-height: 30px;
   color: #666;
   cursor: pointer;
+  font-size: 13px;
+}
+#playlist-status {
+  position: fixed;
+  left: 50%;
+  top: 80px;
+  height: 30px;
+  width: 50%;
+  background: #ddd;
+  line-height: 30px;
+  text-align: right;
+  padding-right: 5px;
+  color: #666;
   font-size: 13px;
 }
 .scrollbar {
@@ -5996,6 +5998,15 @@ body {
   margin-bottom: 0px;
   list-style-type: none;
   padding-left: 0px;
+}
+#list li.summary {
+  color: #333;
+  padding: 10px;
+  font-size: 12px;
+  overflow: hidden;
+}
+#list li.summary h4 {
+  margin-top: 0px;
 }
 #list li.generic .btn-group {
   margin-right: 12px;
@@ -6083,7 +6094,7 @@ body {
   width: 50%;
   position: fixed;
   left: 50%;
-  top: 80px;
+  top: 110px;
   bottom: 240px;
   overflow-x: hidden;
   overflow-y: auto;
@@ -6230,7 +6241,8 @@ tr.placeholder:before {
     margin-top: 8px;
   }
   #player .content img {
-    margin-top: 0px;
+    height: 80%;
+    margin-top: -8px;
   }
   #player #song {
     font-size: 16px;

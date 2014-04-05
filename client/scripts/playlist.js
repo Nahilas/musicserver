@@ -2,11 +2,13 @@ var audioplayer = require('./audioplayer.js'),
 	api = require('./api.js'),
 	util = require('./util.js'),
 	mousetrap = require('./vendor/mousetrap.min.js'),
+	moment = require('./vendor/moment.js'),
 	currentSongs = [],
 	currentSong = null,
 	currentIndex = null,
 	dropIndex = null,
 	$playlist, 
+	$status,
 	currentDrag,
 	selectedRows = [],
 	_ = require('./vendor/lodash.min.js'),
@@ -17,6 +19,7 @@ var audioplayer = require('./audioplayer.js'),
 $(function() {
 
 	$playlist = $("#playlist table tbody");
+	$status = $("#playlist-status span.status");
 
 	$playlist.on('dblclick', '.item', function(e) {
 		var curr = this;
@@ -30,6 +33,16 @@ $(function() {
 		});
 
 		play();
+	});
+
+	$("#playlist-status a").click(function(e) {
+		e.preventDefault();
+
+		currentSongs = [];
+		currentIndex = 0;
+		currentSong = null;
+
+		render();
 	});
 
 	$playlist.on('click', '.item', function(e) {
@@ -47,6 +60,7 @@ $(function() {
 	});
 
 	mousetrap.bind('del', deleteSelected);
+	mousetrap.bind('ctrl+a', selectAll);
 
 	$('#playlist table').sortable({
 		containerSelector: 'table',
@@ -91,6 +105,12 @@ function deleteSelected()
 
 	currentIndex = 0;
 	render();
+}
+
+function selectAll(e) {
+	e.preventDefault();
+
+	select($playlist.find('.item'));
 }
 
 function shiftSelect() {
@@ -197,6 +217,7 @@ function prev() {
 
 function render() {
 	$playlist.html('');
+	var totalDuration = 0;
 
 	if(currentSongs.length > 0) {
 		$.each(currentSongs, function(i,x) {
@@ -208,6 +229,7 @@ function render() {
 				album: x.album,
 				duration: util.secondsToTime(x.duration)
 			}));
+			totalDuration += x.duration;
 
 			$playlist.append(row);
 			row.data('item', x);
@@ -216,6 +238,8 @@ function render() {
 	else {
 		$playlist.html('<td class="empty">Playlist is empty! Add items to start playing music.</td>');
 	}
+
+	$status.html(currentSongs.length + ' songs, ' + parseInt(totalDuration / 60, 10) + ' minutes');	
 }
 
 module.exports = {

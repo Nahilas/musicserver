@@ -1,0 +1,44 @@
+#alphabet-navigation {
+	position: fixed;
+	top: @top-height + @status-height;
+	height: @alphabet-navigation-height;
+	width: @library-width;
+	background: #ddd;
+
+	.artist-bio
+	{
+		line-height: 30px;
+		margin-right: 10px;
+		float: right !important;
+		font-size: 12px;
+	}
+
+	.letter {
+		display: inline-block;
+		text-align: center;
+		line-height: @alphabet-navigation-height;
+		color: #666;
+		cursor: pointer;
+		font-size: 13px;
+
+		&.active {
+		}
+
+	}
+}
+
+#playlist-status
+{
+	position: fixed;
+	left: @library-width;
+	top: @top-height + @status-height;
+	height: @alphabet-navigation-height;
+	width: @library-width;
+	background: #ddd;
+	line-height: 30px;
+	text-align: right;
+	padding-right: 5px;
+	color: #666;
+	font-size: 13px;
+
+}
