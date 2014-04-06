@@ -1,7 +1,7 @@
 var util = require('./util.js'),
 	audioplayer = require('./audioplayer.js'),
 	playlist = require('./playlist.js'),
-	library = require('./library.js'),
+	database = require('./database.js'),
 	$progress, 
 	$duration, 
 	$position, 
@@ -51,7 +51,7 @@ function setText(item)
 	$song.html(item.song);
 	$artist.html(item.artist);
 	$album.html(item.album);
-	$cover.attr('src', library.getCover(item.artist, item.album, 'large'));
+	$cover.attr('src', database.getCover(item.artist, item.album, 'large'));
 }
 
 function onPlayed(item) {

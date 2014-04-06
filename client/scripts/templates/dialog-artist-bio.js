@@ -5,7 +5,7 @@ var locals_ = (locals || {}),image = locals_.image,name = locals_.name,items = l
 buf.push("<div class=\"dialog-artist\">");
 if ( image)
 {
-buf.push("<img" + (jade.attr("src", image, true, false)) + " class=\"pull-left\"/>");
+buf.push("<div" + (jade.attr("style", "background-image: url('" + image + "');", true, false)) + " class=\"artist-image pull-left\"></div>");
 }
 buf.push("<div class=\"pull-left\"><h3>" + (jade.escape(null == (jade.interp = name) ? "" : jade.interp)) + "</h3><div class=\"albums\">");
 // iterate items

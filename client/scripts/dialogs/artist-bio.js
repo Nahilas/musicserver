@@ -2,7 +2,7 @@ var dialog = require('./dialog.js'),
 	_ = require('./../vendor/lodash.min.js'),
 	bioDialog,
 	template = require('./../templates/dialog-artist-bio.js'),
-	library = require('./../library.js'),
+	database = require('./../database.js'),
 	deferred,
 	api = require('./../api.js');
 
@@ -21,11 +21,11 @@ function getImage(artist)
 function getSimilarList(artist)
 {
 	_.each(artist.similar, function(x) {
-		var libraryArtist = library.get([ x.name ], true);
+		var databaseArtist = database.get([ x.name ], true);
 
-		if(libraryArtist) {
+		if(databaseArtist) {
 			x.isLastFM = false;
-			x.name = libraryArtist.name; //Use name from library
+			x.name = databaseArtist.name; //Use name from library
 		}
 		else
 			x.isLastFM = true;
@@ -41,7 +41,7 @@ function animate() {
 	items.unshift(bioDialog.element().find('h3'));
 
 	tl.staggerTo(items, 1, { opacity: 1 }, 0.3);
-	TweenLite.to(bioDialog.element().find('img'), 0.3, { opacity: 1 });
+	TweenLite.to(bioDialog.element().find('.artist-image'), 0.3, { opacity: 1 });
 	TweenLite.to(bioDialog.element().find('.summary'), 0.5, { marginLeft: '0%', ease: Power2.easeOut });
 	TweenLite.to(bioDialog.element().find('.similar'), 0.5, { marginLeft: '0%', ease: Power2.easeOut });
 

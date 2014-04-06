@@ -1,160 +1,156 @@
+var api = require('./api.js'),
+	playlist = require('./playlist.js'),
+	database = require('./database.js'),
+	_ = require('./vendor/lodash.min.js'),
+	artistBioDialog = require('./dialogs/artist-bio.js'),
+	navigation = require('./library-navigation.js'),
+	util = require('./util.js'),
 
-var database,
-	_ = require('./vendor/lodash.min.js');
-	api = require('./api.js');
+	templates = {
+		itemArtist: require('./templates/library-artist.js'),
+		itemAlbum: require('./templates/library-album.js'),
+	},
 
-	function initialize() {
-		var deferred = $.Deferred();
+	$library, 
+	$up, 
+	$alphabetNavigation, 
 
-		api.db().done(function(db) {
-			database = {items: db};
-			deferred.resolve();
-		});
+	artistScrollTop = 0;
 
-		return deferred.promise();
-	}
+function itemDragStart(e)
+{
+	e.dataTransfer.setData("item", JSON.stringify($(e.srcElement).data('item')));
+}
 
 
-	function get(path, ignoreCase)
+function navigateToArtist(e)
+{
+	e.preventDefault();
+
+	showArtist(database.get($(this).html()));
+	
+	return false;
+}
+
+
+function showArtist(artist)
+{
+	artistScrollTop = $library.scrollTop();
+	$library.scrollTop(0);
+
+	$up.removeClass('hide');
+	$library.html('');
+	$artist.html(artist.name);
+
+	navigation.showButtons(
+		function() { artistBioDialog.show(artist); },
+		function() { playlist.playSongs(database.getSongs([ artist.name ])); }
+	);
+
+	_.each(_.sortBy(artist.items, 'name'), function(x)
 	{
-		if(!path || path.length === 0)
-			return database;
-		
-		var item = database; 
-		_.each(path, function(x) {
-			item = _.find(item.items, function(y) 
-				{ 
-					if(ignoreCase)
-						return y.name.toLowerCase() === x.toLowerCase();
-					else
-						return y.name === x; 
-				});
-		});
+		var cover = _.find(x.images, function(y) { return y.size === 'extralarge'; });
+		x.cover = cover ? cover['#text'] : null;
+		var year = new Date(x.releaseDate).getFullYear();
+		x.year = isNaN(year) ? 'Unknown' : year;
+		x.artist = artist.name;
 
-		return item;
-	}
+		var album = $(templates.itemAlbum(x));
+		$library.append(album)
 
-	//Artist and album can be extrapolated from path.
-	function setSongInfo(item, path) {
-		if(path.length < 2)
-		{
-			if(!item.song)
-				item.song = item.name;
-			item.album = 'NA';
-			item.artist = 'NA';
-		}
-		if(path.length === 2)
-		{
-			item.artist = path[0];
-			item.album = path[1];
-			if(!item.song)
-				item.song = item.name;
-		} 
-		if(path.length >= 3)
-		{
-			item.artist = path[0];
-			item.album = path[1];
-			
-			if(!item.song)
-				item.song = item.name;
-			
-			for(var i = 2; i < path.length; i++)
-			{
-				item.album += ' - ' + path[i];
-			}
-		}
+		album.data('name', album.name);
+	});
 
-		var str = '';
-		_.each(path, function(x) {
-			str += x + '/'
-		});
-		str += item.name;
-		item.stream = '/api/stream?path=' + encodeURIComponent(str);
-	}
+	hookupArtistEvents();
+}
 
-	function getMetaData() {
-		var albumCount = 0;
-		var totalDuration = 0.0;
-		var songCount = 0;
+function hookupArtistEvents()
+{
+	$library.find('.controls .play').click(function(e) {
+		e.preventDefault();
 
-		_.each(database.items, function(x) {
-			albumCount += x.items.length;
+		var songs = database.getSongs([ $(this).parents('li.album').data('artist'), $(this).parents('li.album').data('name')  ])
+		playlist.playSongs(songs);
+	});
 
-			var songs = getSongs([x.name]);
-			songCount += songs.length;
+	$library.find('.controls .add').click(function(e) {
+		e.preventDefault();
 
-			_.each(songs, function(y) {
-				if(isNaN(y.duration))
-					return;
+		var songs = database.getSongs([ $(this).parents('li.album').data('artist'), $(this).parents('li.album').data('name')  ])
+		playlist.addSongs(songs);
+	});
+}
 
-				totalDuration += parseFloat(y.duration);
-			});
-		});
+function hookupLibraryEvents() {
+	$library.find('li.artist').click(function() {
+		showArtist(database.get($(this).data('name')));
+	});
 
-		return {
-			albums: albumCount,
-			songs: songCount,
-			duration: (totalDuration / 60) / 60
-		};
-	}
+	$library.find('.play').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
 
-	function getCover(artist, album, size) {
-		var album = _.find(_.find(database.items, function(x) { return x.name === artist; }).items, function(x) { return x.name === album; });
-		var cover = _.find(album.images, function(y) { return y.size === size; });
+		playlist.playSongs(database.getSongs([ $(this).parents('li').data('name') ]));
+	});
 
-		if(cover && cover['#text'] !== '')
-		{
-			return cover['#text'];
-		}		
+	$library.find('.add').click(function(e) {
+		e.preventDefault();
+		e.stopPropagation();
 
-		return '/images/no-cover.png';
-	}
+		playlist.addSongs(database.getSongs([ $(this).parents('li').data('name') ]));
+	});
+}
 
-	function getSongs(path)
-	{
-		var songs = [];
+function showLibrary() {
+	$up.addClass('hide');
+	$library.html('');
+	$artist.html('Library');
 
-		var getSongsRecursive = function(item, currPath) {
-			if(item.isFile)
-			{
-				currPath.pop();
-				setSongInfo(item, currPath);
-				songs.push(item)
+	var lastLetter = null;
+	$.each(database.get([]).items, function(i,x) {
+		var letter = x.name.substring(0,1)
+		var isThe = x.name.substring(0,4).toLowerCase() === 'the ';
 
-				return;
-			}
+		if(lastLetter !== letter && !isThe)
+			$library.append('<li class="alphabet-letter" id="' + letter + '">' + letter + '</li>')
 
-			_.each(item.items, function(x) {
-				if(x.isFile) {
-					setSongInfo(x, currPath);
-					songs.push(x);
-				} 
-				else 
-				{
-					nextPath = currPath.slice(0);
-					nextPath.push(x.name)
-					getSongsRecursive(x, nextPath);
-				}
-			});
-		}
+		var li = $(templates.itemArtist(x));
+		$library.append(li);
 
-		getSongsRecursive(get(path), path.slice(0));
+		if(!isThe)
+			lastLetter = x.name.substring(0,1);
 
-		if(songs.length > 0) {
-			var grouped = [];
-			_.each(_.groupBy(songs, 'album'), function(x, p) { grouped.push(_.sortBy(x, 'track')) });
+		setTimeout(function() { li.addClass('enter'); }, 10);
+	});
 
-			var album = grouped.pop();
-			var songs = _.sortBy(album.concat.apply(album, grouped), 'album');
-		}
+	$library.scrollTop(artistScrollTop);
+	navigation.showLetters();
+	hookupLibraryEvents();
+}
 
-		return songs;
-	}
+function hookupEvents()
+{
+	$('body').on('click', 'a.navigate-to-artist', navigateToArtist);
+
+	$up.click(showLibrary);
+}
+
+function initialize() {
+	var deferred = $.Deferred();
+
+	$library = $("#library");
+	$up = $("#up");
+	$artist = $('h2.artist');
+
+	navigation.initialize($library);
+
+	hookupEvents();
+	showLibrary();
+
+	deferred.resolve();
+	return deferred.promise();
+}
 
 module.exports = {
-	initialize: initialize,
-	get: get,
-	getSongs: getSongs,
-	getMetaData: getMetaData,
-	getCover: getCover
-};
+	initialize: initialize
+}

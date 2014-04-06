@@ -1,0 +1,20 @@
+li.album(data-artist=artist, data-name=name)
+	img(src=(cover || '/images/no-cover.png'))
+	h3
+		span=name
+		span &nbsp;
+		small=year
+	
+	.controls
+		a(href="#").play
+			span.glyphicon.glyphicon-play
+			span  Play
+		a(href="#").add
+			span.glyphicon.glyphicon-plus
+			span  Add
+
+	ul.songs
+		each song,i in items
+			li
+				span=((i + 1) + '. ')
+				span=(song.song || song.name)

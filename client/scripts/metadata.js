@@ -1,9 +1,9 @@
 var $metadata,
-	library = require('./library.js');
+	database = require('./database.js');
 
 function initialize() {
 	$metadata = $("#metadata");
-	var meta = library.getMetaData();
+	var meta = database.getMetaData();
 
 	$metadata.html('Library: ' + meta.albums + ' albums, ' + meta.songs + ' songs, ' + meta.duration.toFixed(1) + ' hours');
 	
