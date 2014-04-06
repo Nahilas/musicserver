@@ -215,6 +215,14 @@ function prev() {
 	play();
 }
 
+function animate() {
+	var tl = new TimelineLite();
+
+	tl.staggerTo($playlist.find('.item'), 0.1, { opacity: 1 }, 0.01);
+
+	tl.resume();
+}
+
 function render() {
 	$playlist.html('');
 	var totalDuration = 0;
@@ -240,6 +248,8 @@ function render() {
 	}
 
 	$status.html(currentSongs.length + ' songs, ' + parseInt(totalDuration / 60, 10) + ' minutes');	
+
+	animate();
 }
 
 module.exports = {

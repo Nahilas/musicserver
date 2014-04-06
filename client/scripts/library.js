@@ -15,14 +15,20 @@ var database,
 	}
 
 
-	function get(path)
+	function get(path, ignoreCase)
 	{
 		if(!path || path.length === 0)
 			return database;
 		
 		var item = database; 
 		_.each(path, function(x) {
-			item = _.find(item.items, function(y) { return y.name === x; });
+			item = _.find(item.items, function(y) 
+				{ 
+					if(ignoreCase)
+						return y.name.toLowerCase() === x.toLowerCase();
+					else
+						return y.name === x; 
+				});
 		});
 
 		return item;

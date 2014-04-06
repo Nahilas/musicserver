@@ -1,5 +1,35 @@
-h3=name
-p!=summary
-p &nbsp;
-button.btn.btn-default.pull-right(type="button") Close
-p &nbsp;
+.dialog-artist
+	if image
+		img.pull-left(src=image)
+	
+	div.pull-left
+		h3=name
+		div.albums
+			each x, i in items
+				span.album-item=(x.name + ' (' + x.year + ')' + (i !== items.length - 1 ? ', ' : ''))
+	
+	div.spacer
+
+	p.summary!=summary
+	p &nbsp;
+
+
+	if similar.length > 0
+		div.similar
+			h4 Similar artists
+			each artist, i in similar
+				span
+					if artist.isLastFM
+						img.destination-icon(src='/images/lastfm-icon.png')
+						a(href=artist.url)=artist.name
+					else
+						img.destination-icon(src='/images/ikon-512.png')
+						a.navigate-to-artist(href="#")=artist.name						
+					
+					span=(i !=similar.length - 1 ? ',' : '')
+					span &nbsp; 
+
+
+	p &nbsp;
+	button.btn.btn-default.pull-right(type="button") Close
+	p &nbsp;

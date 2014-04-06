@@ -6,14 +6,15 @@ var artistBioDialog = require('./dialogs/artist-bio.js');
 var letters = [];
 var templates = {
 	itemDefault: require('./templates/navigation-default.js'),
-	itemAlbum: require('./templates/navigation-album.js')
+	itemAlbum: require('./templates/navigation-album.js'),
+	artistButtons: require('./templates/navigation-artist-buttons.js')
 };
 
 var $list, 
 	$up, 
 	$alphabetNavigation, 
-	currentPath = [], 
-	outerScroll = 0;
+	currentPath = [],
+	artistScrollTop = 0;
 
 $(function() {
 	$list = $("#list");
@@ -45,6 +46,8 @@ $(function() {
 		play($(this).parents('li').data('path'));
 	});
 
+	$('body').on('click', 'a.navigate-to-artist', navigateToArtist);
+
 	$up.click(up);
 });
 
@@ -64,6 +67,17 @@ function itemDragStart(e)
 }
 
 
+function navigateToArtist(e)
+{
+	e.preventDefault();
+
+	var path = [ $(this).html() ];
+	navigate(path);
+
+	return false;
+}
+
+
 function up() {
 	if(currentPath.length === 0)
 		return;
@@ -75,12 +89,19 @@ function up() {
 
 
 	populateList(currentPath);
+	$list.scrollTop(artistScrollTop);
 }
 
 function navigate(path)
 {
 	$up.removeClass('hide');
+
+	if(path.length === 1)
+		artistScrollTop = $list.scrollTop();
+
 	populateList(path);
+
+
 }
 
 function setBreadcrumb() {
@@ -112,16 +133,23 @@ function renderDefault(item, path, showAlphabet)
 
 function renderArtist(item, path)
 {
+
+	$alphabetNavigation.html(templates.artistButtons());
 	$('.artist-bio').click(function(e) {
 		e.preventDefault();
-
 		artistBioDialog.show(item);
+	});
+	$('.artist-play-all').click(function(e) {
+		e.preventDefault();
+		play(path);
 	});
 
 	_.each(item.items, function(x)
 	{
 		var cover = _.find(x.images, function(y) { return y.size === 'extralarge'; });
 		x.cover = cover ? cover['#text'] : null;
+		var year = new Date(x.releaseDate).getFullYear();
+		x.year = isNaN(year) ? 'Unknown' : year;
 
 		var album = $(templates.itemAlbum(x));
 		$list.append(album)
@@ -223,7 +251,6 @@ function populateList(path)
 	$list.scrollTop(0);
 
 	if(currentPath.length === 1) {
-		$alphabetNavigation.html('<a class="pull-right artist-bio" href="#"><span class="glyphicon glyphicon-user"></span>&nbsp;Artist bio...</a>');
 		renderArtist(library.get(currentPath), currentPath.slice(0));
 	}
 	else 
@@ -248,5 +275,6 @@ module.exports = {
 	itemDragStart: itemDragStart,
 	add: add,
 	populate: populateList,
-	initialize: initialize
+	initialize: initialize,
+	navigate: navigate
 }

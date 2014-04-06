@@ -174,6 +174,19 @@ function scrobbledb() {
 
 	var deferred = q.defer();
 
+	var getSimilar = function(artist)
+	{
+		if(!artist.similar || !artist.similar.artist)
+			return [];
+
+		return _.map(artist.similar.artist, function(x) { 
+			return {
+				name: x.name,
+				url: x.url
+			};
+		});
+	}
+
 	_.each(db, function(item) {
 		if(!item.scrobbled)
 		{
@@ -188,6 +201,7 @@ function scrobbledb() {
 							console.log(artist.name + " scrobbled");
 							item.summary = artist.bio.summary;
 							item.images = artist.image;
+							item.similar = getSimilar(artist);
 							item.scrobbled = true;	
 						}
 						
@@ -220,6 +234,7 @@ function scrobbledb() {
 						else {
 							console.log(subItem.name + " scrobbled");
 							subItem.images = album.image;
+							subItem.releaseDate = album.releasedate;
 							subItem.scrobbled = true;
 						}
 					}

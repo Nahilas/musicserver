@@ -5,12 +5,26 @@
 	width: @library-width;
 	background: #ddd;
 
-	.artist-bio
+	.artist-buttons
 	{
-		line-height: 30px;
-		margin-right: 10px;
-		float: right !important;
-		font-size: 12px;
+		text-align: center;
+
+		.artist-button {
+			display: inline-block;
+			width: 125px;
+			padding-left: 20px;
+			padding-right: 20px;
+			font-size: 13px;
+			line-height: @alphabet-navigation-height;
+			text-decoration: none;
+		
+			.glyphicon
+			{
+				font-size: 13px;
+				margin-left: 4px;
+				line-height: @alphabet-navigation-height;
+			}
+		}
 	}
 
 	.letter {
@@ -40,5 +54,9 @@
 	padding-right: 5px;
 	color: #666;
 	font-size: 13px;
+
+	a {
+		text-decoration: none;
+	}
 
 }
